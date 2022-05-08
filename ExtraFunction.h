@@ -6,6 +6,7 @@ using namespace std;
 string ltrim(string&);
 string rtrim(string&);
 string trim(string&);
+int RemoveTheFirstChar(string);
 
 struct tm GetCurrentTime();
 string CorrectWeekDayTime(int);
@@ -39,6 +40,13 @@ string rtrim(string& s) {
 string trim(string& s) {
 	string S = ltrim(s);
 	return rtrim(S);
+}
+
+//
+int RemoveTheFirstChar(string word) {
+	string NewWord = word.substr(1);
+	int New = stoi(NewWord);
+	return New;
 }
 
 //To get the current time

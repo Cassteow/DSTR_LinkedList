@@ -18,7 +18,11 @@ void SearchTutorByRating(Tutor**);
 struct Student* GetMiddleForStudent(Student**, Student**);
 struct Student* BinarySearchAlgorithmForStudent(Student*, string);
 void DisplayOneStudent(Student*);
+
+//the function definition is at ExtraFunction.h
 string trim(string&);
+int RemoveTheFirstChar(string);
+
 
 struct Tutor* GetMiddleForTutor(Tutor** start_ref, Tutor** last_ref) {
 	Tutor* start = *start_ref;
@@ -42,34 +46,24 @@ struct Tutor* BinarySearchAlgorithmForTutor(Tutor* head, string id) {
 	
 	Tutor* start = head;
 	Tutor* last = NULL;
-
+	int idInt = RemoveTheFirstChar(id);
 	do {
 		Tutor* mid = GetMiddleForTutor(&start, &last);
 
-		////Convert ID digit into Integer to compare
-		//string convertMid = "0", convertID = "0";
-		//int intMid = 0, intID = 0;
-		//for (int i = 1; i < mid->TutorID.length(); i++) { //int i = 1 as we need to skip the first character
-		//	convertMid = convertMid + mid->TutorID.at(i);
-		//}
-		//for (int i = 1; i < id.length(); i++) { //int i = 1 as we need to skip the first character
-		//	convertID = convertID + id.at(i);
-		//}
 
 		//No more MID, return START or LAST node, or NULL if no matches
 		if (mid == NULL) {
-			if (start->TutorID == id)
+			if (RemoveTheFirstChar(start->TutorID) == idInt)
 				return start;
-			else if (last->TutorID == id)
-				return last;
+			
 			else
 				return NULL;
 		}
 		//Return MID if it is a match
-		if (mid->TutorID == id)
+		if (RemoveTheFirstChar(mid->TutorID) == idInt)
 			return mid;
 		//MID ID is valued less than given search ID
-		else if (mid->TutorID < id)
+		else if (RemoveTheFirstChar(mid->TutorID) < idInt)
 			start = mid->next; //Set Start as the next node of MID
 		else
 			last = mid;
@@ -80,7 +74,7 @@ struct Tutor* BinarySearchAlgorithmForTutor(Tutor* head, string id) {
 
 void SearchTutorByTutorID(Tutor** head_ref) {
 	string TutorID;
-
+	Tutor* found;
 	cout << "\n==========Search a Tutor by Tutor ID==========" << endl;
 	cout << "Enter the tutor ID to search: ";
 	cin >> TutorID;
@@ -88,15 +82,12 @@ void SearchTutorByTutorID(Tutor** head_ref) {
 	cout << "\nSearch Result: " << endl;
 	//Trim Input
 	TutorID = trim(TutorID);
-	//Change small letter to capital letter if there are any
-	for_each(TutorID.begin(), TutorID.end(), [](char& c)
-	{
-		c = toupper(c);
-	});
-	if (BinarySearchAlgorithmForTutor(*head_ref, TutorID) == NULL)
+
+	found = BinarySearchAlgorithmForTutor(*head_ref, TutorID);
+	if (found == NULL)
 		cout << "Tutor ID " << TutorID << " does not exist in Tutor.txt." << endl;
 	else {
-		Tutor* target = BinarySearchAlgorithmForTutor(*head_ref, TutorID);
+		Tutor* target = found;
 		DisplayOneTutorForAdmin(target);
 	}
 }
@@ -157,22 +148,21 @@ struct Student* GetMiddleForStudent(Student** start_ref, Student** last_ref) {
 struct Student* BinarySearchAlgorithmForStudent(Student* head, string id) {
 	Student* start = head;
 	Student* last = NULL;
-
+	int idInt = RemoveTheFirstChar(id);
 	do {
 		Student* mid = GetMiddleForStudent(&start, &last);
 
 		if (mid == NULL) {
-			if (start->StudentID == id)
+			if (RemoveTheFirstChar(start->StudentID) == idInt)
 				return start;
-			else if (last->StudentID == id)
-				return last;
+			
 			else
 				return NULL;
 		}
 
-		if (mid->StudentID == id)
+		if (RemoveTheFirstChar(mid->StudentID) == idInt)
 			return mid;
-		else if (mid->StudentID < id)
+		else if (RemoveTheFirstChar(mid->StudentID) < idInt)
 			start = mid->next;
 		else
 			last = mid;

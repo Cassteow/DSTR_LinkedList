@@ -31,9 +31,9 @@ void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* 
 	char repeat;
 	bool newTutorAdded = false;
 
-	//Update Tutor Records and Delete Records with Termination Date more than 180 days ago
-	DeleteTutor(TutorHead);
-	TutorHead = ReadTutorFile();
+	////Update Tutor Records and Delete Records with Termination Date more than 180 days ago
+	//DeleteTutor(TutorHead);
+	//TutorHead = ReadTutorFile();
 
 	cout << "\n====================Tutor Records====================" << endl;
 	cout << "1. Add New Tutor Record" << endl << "2. Display All Tutor Records" << endl << "3. Search Tutors(by Tutor ID or Rating)" << endl;
@@ -79,7 +79,7 @@ void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* 
 		break;
 	case 2: //DISPLAY ALL TUTOR RECORD
 		//Read new updated linked list into TutorHead from Tutor.txt file
-		TutorHead = ReadTutorFile();
+		
 		cout << "\n====================Display All Tutor Records====================" << endl;
 		DisplayAllTutorsForAdmin(TutorHead);
 		cout << "Enter 'Y' to exit the entire program or Press any key to return to Tutor Records Page: ";

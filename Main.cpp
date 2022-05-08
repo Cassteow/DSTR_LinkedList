@@ -38,7 +38,7 @@ void MainLandingPage() {
 	Admin* ADMIN = ReadAdminFile();
 	//Update Tutor Records and Delete Records with Termination Date more than 180 days ago
 	DeleteTutor(TUTOR);
-	TUTOR = ReadTutorFile();
+	//TUTOR = ReadTutorFile();
 
 	//MAIN LANDING PAGE FOR TUTOR MANAGEMENT SYSTEM
 	cout << "\n====================Tutors Management System====================" << endl;

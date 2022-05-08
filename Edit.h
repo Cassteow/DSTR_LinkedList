@@ -109,7 +109,7 @@ bool AddNewTutor(Tutor* TutorHead) {
 	cout << "Enter new tutor name: ";
 	cin.ignore();
 	getline(cin, name);
-	cout << "Enter Tutor Join Date (YYYY-MM-DD)";
+	cout << "Enter Tutor Join Date (YYYY-MM-DD): ";
 	getline(cin, dateJoin);
 	dateTerminate = "1900-01-01";
 	cout << "Enter Tutor Phone Number: ";
@@ -143,7 +143,7 @@ bool AddNewTutor(Tutor* TutorHead) {
 	//Choose subject name and codee for tutor 
 	do {
 		valid = 0;
-		cout << "Enter subject name here (Choices: English, Math, Chemistry, Physics, Biology): << endl";
+		cout << "Enter subject name here (Choices: English, Math, Chemistry, Physics, Biology): ";
 		getline(cin, subjectName);
 		if (trim(subjectName) == "English" || trim(subjectName) == "english") {
 			subjectCode = "E001S";
@@ -358,7 +358,6 @@ void TerminateTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 						}
 
 						DateTerminate = to_string(year) + '-' + monthString + '-' + dayString;
-						cout << DateTerminate << endl;
 					}
 					else {
 						cout << "Invalid Date Input! Please try again with a valid date.\n ";
@@ -369,6 +368,8 @@ void TerminateTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 				target->DateTerminate = DateTerminate;
 				WriteTutorFile(TutorHead); //Modify and Update records in text file
 				cout << TutorID << "'s date of termination is updated." << endl;
+				DeleteTutor(TutorHead);
+				TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
 				break;
 			case 2: //Return to Admin sub menu
 				ValidChoice = 1;
