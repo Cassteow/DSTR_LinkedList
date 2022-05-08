@@ -23,7 +23,6 @@ void DisplayOneStudent(Student*);
 string trim(string&);
 int RemoveTheFirstChar(string);
 
-
 struct Tutor* GetMiddleForTutor(Tutor** start_ref, Tutor** last_ref) {
 	Tutor* start = *start_ref;
 	if (start == NULL || start->next == *last_ref)
