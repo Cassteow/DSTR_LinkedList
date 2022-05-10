@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <ctype.h>
+#include <sstream>
 #include <time.h>
 
 using namespace std;
@@ -7,13 +9,17 @@ string ltrim(string&);
 string rtrim(string&);
 string trim(string&);
 int RemoveTheFirstChar(string);
+bool checkIntInput(string);
+bool checkStringInput(string);
 
 struct tm GetCurrentTime();
 string CorrectWeekDayTime(int);
 string CorrectMonthTime(int);
 
-string GetUniqueTutorID(Tutor**);
-bool UniqueTutorIDChecker(Tutor**, string);
+string GetUniqueTutorID(Tutor*);
+bool UniqueTutorIDChecker(Tutor*, string);
+string GetUniqueStudentID(Student*);
+bool UniqueStudentIDChecker(Student*, string);
 
 bool isLeapYear(int);
 bool isValidDate(int, int, int);
@@ -42,11 +48,58 @@ string trim(string& s) {
 	return rtrim(S);
 }
 
-//
+//Function to remove the first character of ID 
+//string and convert digit of ID to integer
 int RemoveTheFirstChar(string word) {
-	string NewWord = word.substr(1);
-	int New = stoi(NewWord);
-	return New;
+	if (word.length() > 1) {
+		string NewWord = word.substr(1);
+		if (checkIntInput(NewWord)) {
+			int New = stoi(NewWord);
+			return New;
+		}
+		else {
+			return 0;
+		}
+	}
+	else {
+		return 0;
+	}
+}
+//Check whether input is integer and is not null, if yes, returns true
+bool checkIntInput(string input) {
+	input = trim(input);
+	bool isNumber = true;
+	if (input == "") {
+		isNumber = false;
+	}
+	for (int i = 0; i < input.size(); i++) {
+		if (isspace(input[i])) { //contains space
+			isNumber = false;
+		}
+		if (isalpha(input[i])) { //contains alphabet
+			isNumber = false;
+		}
+		
+		if (ispunct(input[i])) { //contains punctuation
+			isNumber = false;
+		}
+	}
+	return isNumber;
+}
+
+//check if string input only contains string and is not null, if yes return true
+bool checkStringInput(string input) {
+	input = trim(input);
+	bool goodInput = true;
+	if (input.empty()) {
+		goodInput = false;
+	}
+	for (int i = 0; i < input.size(); i++) {
+		if (isdigit(input[i])) {//contains digits
+			goodInput = false;
+		}
+	}
+	return goodInput;
 }
 
 //To get the current time
@@ -106,41 +159,78 @@ string CorrectMonthTime(int num) {
 }
 
 //Function to check if Tutor ID is unique
-bool UniqueTutorIDChecker(Tutor** head_ref, string id) {
-	Tutor* check = *head_ref;
+bool UniqueTutorIDChecker(Tutor* TutorHead, string id) {
+	
 	bool unique = true;
 	//Check if tutor ID is unique
-	while (check != NULL) {
-		if (trim(check->TutorID) == trim(id)) {
+	while (TutorHead != NULL) {
+		if (trim(TutorHead->TutorID) == trim(id)) {
 			unique = false;
 		}
-		check = check->next;
+		TutorHead = TutorHead->next;
 	}
 	return unique;
 }
 
 //Function that returns a unique Tutor ID
-string GetUniqueTutorID(Tutor** head_ref) {
-	Tutor* ptr = *head_ref;
-
+string GetUniqueTutorID(Tutor* TutorHead) {
+	
 	int count = 1;
 	string id;
 
 	//get a number for Tutor ID
-	while (ptr != NULL) {
+	while (TutorHead != NULL) {
 		count += 1;
-		ptr = ptr->next;
+		TutorHead = TutorHead->next;
 	}
 
 	//Create tutor ID
 	id = "T" + to_string(count);
 
 	//If ID is not unique, add number to count
-	while (!UniqueTutorIDChecker(head_ref, id)) {
+	while (!UniqueTutorIDChecker(TutorHead, id)) {
 		count += 1;
 		id = "T" + to_string(count);
 	}
 	
+	return id;
+}
+
+//Function to check if Tutor ID is unique
+bool UniqueStudentIDChecker(Student* StudentHead, string id) {
+
+	bool unique = true;
+	//Check if tutor ID is unique
+	while (StudentHead != NULL) {
+		if (trim(StudentHead->StudentID) == trim(id)) {
+			unique = false;
+		}
+		StudentHead = StudentHead->next;
+	}
+	return unique;
+}
+
+//Function that returns a unique Tutor ID
+string GetUniqueStudentID(Student* StudentHead) {
+
+	int count = 1;
+	string id;
+
+	//get a number for Tutor ID
+	while (StudentHead != NULL) {
+		count += 1;
+		StudentHead = StudentHead->next;
+	}
+
+	//Create tutor ID
+	id = "S" + to_string(count);
+
+	//If ID is not unique, add number to count
+	while (!UniqueStudentIDChecker(StudentHead, id)) {
+		count += 1;
+		id = "S" + to_string(count);
+	}
+
 	return id;
 }
 

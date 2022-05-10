@@ -26,20 +26,22 @@ int main() {
 
 //Function for Main Landing Page (displayed when system starts or when user logout)
 void MainLandingPage() {
+	string userInput;
 	int login;
-	char repeat;
+	string repeat;
 	bool registered = false;
-	string id, password, name, phone, NewStudentID = "S" + to_string(rand()), centercode, centername;
+	string id, password, name, phone, centercode, centername;
 	struct tm time = GetCurrentTime();
 
 	//Read all Tutor, Student, and Admin records into linked list
 	Tutor* TUTOR = ReadTutorFile();
+	MergeSortForID(&TUTOR); //Sort Tutor Linked List
 	Student* STUDENT = ReadStudentFile();
 	Admin* ADMIN = ReadAdminFile();
 	//Update Tutor Records and Delete Records with Termination Date more than 180 days ago
-	DeleteTutor(TUTOR);
-	//TUTOR = ReadTutorFile();
+	DeleteTutor(&TUTOR);
 
+	string NewStudentID = GetUniqueStudentID(STUDENT);
 	//MAIN LANDING PAGE FOR TUTOR MANAGEMENT SYSTEM
 	cout << "\n====================Tutors Management System====================" << endl;
 	cout << "===================" << CorrectWeekDayTime(time.tm_wday) << " " << CorrectMonthTime(time.tm_mon) << " " << time.tm_mday << " " << time.tm_hour << ":" << time.tm_min << ":" << time.tm_sec << " " << 1900 + time.tm_year << "====================" << endl;
@@ -47,8 +49,10 @@ void MainLandingPage() {
 	cout << "1. Login as Admin" << endl << "2. Login as Student" << endl;
 	cout << "3. Register as New Student" << endl << "4. Exit the system" << endl;
 	cout << "Enter your choice here: ";
+	userInput.clear();
+	getline(cin, userInput);
 	//Input Validation (ensure input is integer)
-	while (!(cin >> login)) {
+	while (!(checkIntInput(userInput))) {
 		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
 
 		cout << "====================Tutors Management System====================" << endl;
@@ -60,18 +64,40 @@ void MainLandingPage() {
 		//Clear previous input
 		cin.clear();
 		//Discard previous input
-		cin.ignore(100, '\n');
+		userInput.clear();
+		getline(cin, userInput);
 	}
-
+	login = stoi(userInput);
 	switch (login) {
 	case 1: //ADMIN LOGIN
 		do {
 			cout << endl;
 			cout << "----------Login as Admin----------" << endl;
 			cout << "Enter your admin ID here: ";
-			cin >> id;
+			getline(cin, id);
+			while (id.empty()) {
+				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+				cout << "Enter your admin ID here: ";
+
+				//Clear previous input
+				cin.clear();
+				//Discard previous input
+				id.clear();
+				getline(cin, id);
+			}
+
 			cout << "Enter your password here: ";
-			cin >> password;
+			getline(cin, password);
+			while (password.empty()) {
+				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+				cout << "Enter your password here: ";
+
+				//Clear previous input
+				cin.clear();
+				//Discard previous input
+				password.clear();
+				getline(cin, password);
+			}
 			//Check admin login credentials wiht function that returns boolean value
 			if (AdminLogin(ADMIN, id, password)) {
 				repeat = 'A';
@@ -80,11 +106,11 @@ void MainLandingPage() {
 			}
 			else {
 				cout << "Enter 'Y' to try again or Press any key to return to main menu: ";
-				cin >> repeat;
+				getline(cin, repeat);
 			}
-		} while (repeat == 'Y' || repeat == 'y');
+		} while (repeat == "Y" || repeat == "y");
 
-		if (repeat != 'Y' || repeat != 'y') {
+		if (repeat != "Y" || repeat != "y") {
 			cout << endl << endl;
 			main();
 		}
@@ -97,9 +123,29 @@ void MainLandingPage() {
 			cout << endl;
 			cout << "----------Login as Student----------" << endl;
 			cout << "Enter your student ID here: ";
-			cin >> id;
+			getline(cin, id);
+			while (id.empty()) {
+				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+				cout << "Enter your student ID here: ";
+
+				//Clear previous input
+				cin.clear();
+				//Discard previous input
+				password.clear();
+				getline(cin, id);
+			}
 			cout << "Enter your password here: ";
-			cin >> password;
+			getline(cin, password);
+			while (password.empty()) {
+				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+				cout << "Enter your password here: ";
+
+				//Clear previous input
+				cin.clear();
+				//Discard previous input
+				password.clear();
+				getline(cin, password);
+			}
 			//Check student login credentials wiht function that returns boolean value
 			if (StudentLogin(STUDENT, id, password) != NULL) {
 				WantedStudent = StudentLogin(STUDENT, id, password);
@@ -114,9 +160,9 @@ void MainLandingPage() {
 				cout << "Enter 'Y' to try again or Press any key to return to main menu: ";
 				cin >> repeat;
 			}
-		} while (repeat == 'Y' || repeat == 'y');
+		} while (repeat == "Y" || repeat == "y");
 
-		if (repeat != 'Y' || repeat != 'y')
+		if (repeat != "Y" || repeat != "y") 
 			main();
 		break;
 	case 3: //STUDENT REGISTRATION
@@ -125,11 +171,27 @@ void MainLandingPage() {
 		cout << endl;
 		cout << "----------Register New Student----------" << endl;
 		cout << "Enter your name here: ";
-		cin.ignore();
 		getline(cin, name);
+		//Ensure name input is valid
+		while (!checkStringInput(name)) {
+			cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+			cout << "Enter your name here: ";
+			name.clear();
+			cin.clear();
+			getline(cin, name);
+		}
 
 		cout << "Enter your phone number here: "; //**** ADD VALIDATE PHONE NUMBER
 		getline(cin, phone);
+		while (!(checkIntInput(phone))) {
+			cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+			cout << "Enter your phone number here: ";
+			//Clear previous input
+			cin.clear();
+			//Discard previous input
+			phone.clear();
+			getline(cin, phone);
+		}
 
 		//Choose tuition center for student registration
 		do {
@@ -157,6 +219,15 @@ void MainLandingPage() {
 		cout << "Your assigned student ID: " << NewStudentID << endl; //Display System Assigned student ID
 		cout << "Enter your password here: ";
 		getline(cin, password);
+		while (password.empty()) {
+			cout << "********INVALID INPUT********\nPassword cannot be empty.\n" << endl;
+			cout << "Enter your password here: ";
+			//Clear previous input
+			cin.clear();
+			//Discard previous input
+			password.clear();
+			getline(cin, password);
+		}
 
 		//Insert New Student record at the end of the linked list
 		InsertAtEndForReadStudentFile(&STUDENT, NewStudentID, trim(name), trim(phone), password, centercode, trim(centername), "Nope", "Nope", "Nope", "Nope", "Nope", 0);

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <sstream>
 #include "Struct.h"
 #include "SubMenu.h"
 #include "Search.h"
@@ -9,8 +10,8 @@
 
 using namespace std;
 
-bool AddNewTutor(Tutor*);
-void DeleteTutor(Tutor*);
+bool AddNewTutor(Tutor**);
+void DeleteTutor(Tutor**); 
 void ModifyTutor(Tutor*, Student*, Admin*);
 void TerminateTutor(Tutor*, Student*, Admin*);
 void SearchStudentToModify(Tutor*, Student*, Admin*);
@@ -19,10 +20,10 @@ void AddATutorForStudent(Tutor*, Student*, Admin*, Student*, string);
 void RemoveATutorForStudent(Tutor*, Student*, Admin*, Student*, string);
 
 //Function for System to Automatically Delete Tutor Record if Termination Date >= 180 days
-void DeleteTutor(Tutor* TutorHead) {
-	Tutor* updated = NULL;
+void DeleteTutor(Tutor** TutorHead_ref) {
+	Tutor* TutorHead = *TutorHead_ref;
 	struct tm time = GetCurrentTime();
-	bool updateSuccess = false;
+	
 	//Get Current Date
 	int currentDay = time.tm_mday;
 	int currentMonth = time.tm_mon + 1;
@@ -33,6 +34,7 @@ void DeleteTutor(Tutor* TutorHead) {
 	if (TutorHead == NULL)
 		return;
 	while (TutorHead != NULL) {
+		//clear previous string data
 		yearString.clear();
 		monthString.clear();
 		dayString.clear();
@@ -53,69 +55,145 @@ void DeleteTutor(Tutor* TutorHead) {
 		day = stoi(trim(dayString));
 
 		//TermDate Invalid
-		if (TermDate == "1900-01-01") {
-			InsertAtEndForReadTutorFile(&updated, TutorHead->TutorID, TutorHead->Name,
-				TutorHead->DateJoin, TutorHead->DateTerminate, TutorHead->HourlyRate,
-				TutorHead->PhoneNumber, TutorHead->Address, TutorHead->CenterCode,
-				TutorHead->CenterName, TutorHead->SubjectCode, TutorHead->SubjectName,
-				TutorHead->TotalRatings, TutorHead->NoOfRatings, TutorHead->AverageRating);
-			
-		}
-		//TermDate is valid
-		else {
-			//termination date is in future, do not delete
-			if (checkFutureDate(day, month, year)) {
-				InsertAtEndForReadTutorFile(&updated, TutorHead->TutorID, TutorHead->Name,
-					TutorHead->DateJoin, TutorHead->DateTerminate, TutorHead->HourlyRate,
-					TutorHead->PhoneNumber, TutorHead->Address, TutorHead->CenterCode,
-					TutorHead->CenterName, TutorHead->SubjectCode, TutorHead->SubjectName,
-					TutorHead->TotalRatings, TutorHead->NoOfRatings, TutorHead->AverageRating);		
-			}
-			//termination date in the past
-			else {
-				dayDifferences = getDifferenceDate(day, month, year, currentDay, currentMonth, currentYear);
-				//Check if TermDate is more than 180 days, if yes, delete by skipping the node
-				if (dayDifferences >= 180) {
-					 //Skip current node to delete
+		if (TermDate != "1900-01-01") {
+			if (getDifferenceDate(day, month, year, currentDay, currentMonth, currentYear) >= 180) {
+				if (TutorHead->prev == NULL) {
+					*TutorHead_ref = TutorHead->next;
+					TutorHead->next->prev = NULL;
 				}
-				//less than 180 days, remain record
 				else {
-					InsertAtEndForReadTutorFile(&updated, TutorHead->TutorID, TutorHead->Name,
-						TutorHead->DateJoin, TutorHead->DateTerminate, TutorHead->HourlyRate,
-						TutorHead->PhoneNumber, TutorHead->Address, TutorHead->CenterCode,
-						TutorHead->CenterName, TutorHead->SubjectCode, TutorHead->SubjectName,
-						TutorHead->TotalRatings, TutorHead->NoOfRatings, TutorHead->AverageRating);
-					
+					TutorHead->prev->next = TutorHead->next;
 				}
 			}
 		}
 		TutorHead = TutorHead->next;
 	}
-	WriteTutorFile(updated);
 }
 //Function to Add New Tutor Record
-bool AddNewTutor(Tutor* TutorHead) {
-	int valid;
-	bool addSuccess = false;
+bool AddNewTutor(Tutor** TutorHead_ref) {
+	int valid, day, month, year;
+	bool addSuccess = false, validDate = false;
 	string tutorID, name, dateJoin, dateTerminate, phone, address, centerCode, centerName, subjectCode, subjectName;
 	int hourlyRate;
+	string dayString, monthString, yearString, hourlyRateString;
 
 	//Get unique ID for new tutor
-	tutorID = GetUniqueTutorID(&TutorHead);
+	tutorID = GetUniqueTutorID(*TutorHead_ref);
 
 	//Get details of new tutor
 	cout << "\n==========Add New Tutor Record==========" << endl;
 	cout << "Tutor ID for New Tutor: " << tutorID << endl;
 	cout << "Enter new tutor name: ";
-	cin.ignore();
 	getline(cin, name);
-	cout << "Enter Tutor Join Date (YYYY-MM-DD): ";
-	getline(cin, dateJoin);
+	//Ensure name input is valid
+	while (!checkStringInput(name)) {
+		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		cout << "Enter new tutor name: ";
+		name.clear();
+		cin.clear();
+		getline(cin, name);
+	}
+	//Get Joining date of tutor
+	do {
+		//Get Joining Date - Year
+		cout << "Enter year of joining date for tutor (format - YYYY): ";
+		getline(cin, yearString);
+		while (!checkIntInput(yearString)) {
+			cout << "\nWrong Year Format Input! Please try again with integers only.\n";
+			cout << "Enter year of joining date for tutor (format - YYYY): ";
+			//Discard previous input
+			yearString.clear();
+			//Clear previous input
+			cin.clear();
+			getline(cin, yearString);
+		}
+
+		//Get Joining Date - Month
+		cout << "Enter month of joining date for tutor (format - MM): ";
+		getline(cin, monthString);
+		while (!checkIntInput(monthString)) {
+			cout << "\nWrong Month Format Input! Please try again with integers only.\n";
+			cout << "Enter month of joining date for tutor (format - MM): ";
+			//Clear previous input
+			cin.clear();
+			//Discard previous input
+			monthString.clear();
+			getline(cin, monthString);
+		}
+
+		//Get Joining Date - Day
+		cout << "Enter day of joining date for tutor (format - DD): ";
+		getline(cin, dayString);
+		while (!checkIntInput(dayString)) {
+			cout << "\nWrong Day Format Input! Please try again with integers only.\n";
+			cout << "Enter day of joining date for tutor (format - DD): ";
+			//Clear previous input
+			cin.clear();
+			//Discard previous input
+			dayString.clear();
+			getline(cin, dayString);
+		}
+
+		year = stoi(yearString);
+		month = stoi(monthString);
+		day = stoi(dayString);
+		//Invalid Date
+		if (!(isValidDate(day, month, year))) {
+			cout << dayString << monthString << yearString << "Invalid Date Input! Please try again with a valid date.\n ";
+			dayString.clear();
+			monthString.clear();
+			yearString.clear();
+			day = 0, month = 0, year = 0;
+			validDate = false;
+		}
+		//Valid Date
+		else if (isValidDate(day, month, year)) {
+			validDate = true;
+			//ensure double digit format for Month and Day
+			if (day < 10) {
+				dayString = '0' + to_string(day);
+			}
+			else {
+				dayString = to_string(day);
+			}
+
+			if (month < 10) {
+				monthString = '0' + to_string(month);
+			}
+			else {
+				monthString = to_string(month);
+			}
+
+			dateJoin = to_string(year) + '-' + monthString + '-' + dayString;
+		}
+		
+	} while (!validDate);
+
 	dateTerminate = "1900-01-01";
+
 	cout << "Enter Tutor Phone Number: ";
 	getline(cin, phone);
+	while (!(checkIntInput(phone))) {
+		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		cout << "Enter Tutor Phone Number: ";
+		//Clear previous input
+		cin.clear();
+		//Discard previous input
+		phone.clear();
+		getline(cin, phone);
+	}
+
 	cout << "Enter Tutor Address: ";
 	getline(cin, address);
+	while (address.empty()) {
+		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		cout << "Enter Tutor Address: ";
+		//Clear previous input
+		cin.clear();
+		//Discard previous input
+		address.clear();
+		getline(cin, address);
+	}
 
 	//Choose tuition center name and code for tutor 
 	do {
@@ -168,26 +246,47 @@ bool AddNewTutor(Tutor* TutorHead) {
 		else {
 			cout << "Invalid subject name entered." << endl << "Please enter again." << endl << endl;
 			valid = 0;
+			subjectName.clear();
 		}
 	} while (valid == 0);
 
 	cout << "Enter hourly rate (in RM) for tutor: RM";
-	cin >> hourlyRate;
+	getline(cin, hourlyRateString);
+	while (!(checkIntInput(hourlyRateString))) {
+		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		cout << "Enter hourly rate (in RM) for tutor: RM";
+		//Clear previous input
+		cin.clear();
+		//Discard previous input
+		hourlyRateString.clear();
+		getline(cin, hourlyRateString);
+	}
+	hourlyRate = stoi(hourlyRateString);
 	
-	TutorHead = InsertAtBeginningForReadTutorFile(&TutorHead, tutorID, name, dateJoin, dateTerminate, hourlyRate, phone, address, centerCode, centerName, subjectCode, subjectName, 0, 0, 0);
-	addSuccess = WriteTutorFile(TutorHead);
+	InsertAtBeginningForReadTutorFile(TutorHead_ref, tutorID, name, dateJoin, dateTerminate, hourlyRate, phone, address, centerCode, centerName, subjectCode, subjectName, 0, 0, 0);
+	addSuccess = true;
 	return addSuccess;
 }
 
 //Function to Modify Tutor Records
 void ModifyTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	int option, ValidChoice;
-	char repeat;
-	string TutorID, modification;
+	string TutorID, modification, userInput, repeat;
 
 	cout << "\n==========Modify a Tutor Record==========" << endl;
 	cout << "Enter the tutor ID to modify: ";
-	cin >> TutorID;
+	getline(cin, TutorID);
+	while (TutorID.empty()) {
+		cout << "********INVALID INPUT********\nPlease enter the correct tutor ID format.\n" << endl;
+		cout << "Enter the tutor ID to modify: ";
+
+		//Clear previous input
+		cin.clear();
+		//Discard previous input
+		TutorID.clear();
+		getline(cin, TutorID);
+	}
+	TutorID = trim(TutorID);
 	cout << endl;
 	cout << "Tutor's Record: " << endl;
 	//Search for tutor ID to be modified
@@ -207,7 +306,10 @@ void ModifyTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 			cout << "Enter '2' to modify tutor's address" << endl;
 			cout << "Enter '3' to return to Tutor Record Page" << endl;
 			cout << "Enter your choice here: ";
-			while (!(cin >> option)) {
+			userInput.clear();
+			getline(cin, userInput);
+			//Input Validation (ensure input is integer)
+			while (!(checkIntInput(userInput))) {
 				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
 				cout << "Enter '1' to modify tutor's phone" << endl;
 				cout << "Enter '2' to modify tutor's address" << endl;
@@ -217,8 +319,10 @@ void ModifyTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 				//Clear previous input
 				cin.clear();
 				//Discard previous input
-				cin.ignore(100, '\n');
+				userInput.clear();
+				getline(cin, userInput);
 			}
+			option = stoi(userInput);
 
 			switch (option) {
 			case 1: //Modify Phone Number
@@ -230,8 +334,8 @@ void ModifyTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 				WriteTutorFile(TutorHead); //Modify and update tutor record in text file
 				cout << TutorID << "'s phone number is updated." << endl;
 				cout << "Enter 'Y' to continue the modification for Tutor " << TutorID << " or Press any key to return to Tutor Records Page : ";
-				cin >> repeat;
-				if (repeat == 'Y' || repeat == 'y') {
+				getline(cin, repeat);
+				if (repeat == "Y" || repeat == "y") {
 					ValidChoice = 0;
 				}
 				else {
@@ -248,8 +352,8 @@ void ModifyTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 				WriteTutorFile(TutorHead); //Modify and update tutor record in text file
 				cout << TutorID << "'s address is updated." << endl;
 				cout << "Enter 'Y' to continue the modification for Tutor " << TutorID << " or Press any key to return to Tutor Records Page : ";
-				cin >> repeat;
-				if (repeat == 'Y' || repeat == 'y') {
+				getline(cin, repeat);
+				if (repeat == "Y" || repeat == "y") {
 					ValidChoice = 0;
 				}
 				else {
@@ -273,14 +377,24 @@ void ModifyTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 
 //Function to Termination Date for Tutor
 void TerminateTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
-	string TutorID, DateTerminate;
-	char ch1 = NULL, ch2 = NULL;
+	string TutorID, DateTerminate, userInput;
 	int option, ValidChoice, day, month, year;
 	string dayString, monthString, yearString;
 	bool valid = true;
 	cout << "\n==========Terminate a Tutor==========" << endl;
 	cout << "Enter the tutor ID to terminate: ";
-	cin >> TutorID;
+	getline(cin, TutorID);
+	//Input validation
+	while (TutorID.empty()) {
+		cout << "********INVALID INPUT********\nPlease enter the correct tutor ID format.\n" << endl;
+		cout << "Enter the tutor ID to terminate: ";
+
+		//Clear previous input
+		cin.clear();
+		//Discard previous input
+		TutorID.clear();
+		getline(cin, TutorID);
+	}
 	cout << endl;
 	cout << "Tutor's Record: " << endl;
 
@@ -296,43 +410,67 @@ void TerminateTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 		do {
 			ValidChoice = 0;
 			cout << "Enter '1' to continue or '2' to return to Tutor Records Page: ";
-			cin >> option;
+			userInput.clear();
+			getline(cin, userInput);
+			//Input Validation (ensure input is integer)
+			while (!(checkIntInput(userInput))) {
+				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+				cout << "Enter '1' to continue or '2' to return to Tutor Records Page: ";
+
+				//Clear previous input
+				cin.clear();
+				//Discard previous input
+				userInput.clear();
+				getline(cin, userInput);
+			}
+			option = stoi(userInput);
 			switch (option) {
 			case 1: //User confirm termination date
 				ValidChoice = 1;
 				do {
 					//Get Termination  Date - Year
 					cout << "Enter year of termination date for tutor (format - YYYY): "; 
-					while (!(cin >> year)) {
+					cin.ignore();
+					getline(cin, yearString);
+					while (!checkIntInput(yearString)) {
 						cout << "\nWrong Year Format Input! Please try again with integers only.\n";
 						cout << "Enter year of termination date for tutor (format - YYYY): ";
+						//Discard previous input
+						yearString.clear();
 						//Clear previous input
 						cin.clear();
-						//Discard previous input
-						cin.ignore(100, '\n');
+						getline(cin, yearString);
 					}
+					
 					//Get Termination  Date - Month
 					cout << "Enter month of termination date for tutor (format - MM): "; 
-					while (!(cin >> month)) {
+					getline(cin, monthString);
+					while (!checkIntInput(monthString)) {
 						cout << "\nWrong Month Format Input! Please try again with integers only.\n";
 						cout << "Enter month of termination date for tutor (format - MM): ";
 						//Clear previous input
 						cin.clear();
 						//Discard previous input
-						cin.ignore(100, '\n');
+						monthString.clear();
+						getline(cin, monthString);
 					}
 
 					//Get Termination  Date - Day
 					cout << "Enter day of termination date for tutor (format - DD): "; 
-					while (!(cin >> day)) {
+					getline(cin, dayString);
+					while (!checkIntInput(dayString)) {
 						cout << "\nWrong Day Format Input! Please try again with integers only.\n";
 						cout << "Enter day of termination date for tutor (format - DD): ";
 						//Clear previous input
 						cin.clear();
 						//Discard previous input
-						cin.ignore(100, '\n');
+						dayString.clear();
+						getline(cin, dayString);
 					}
 
+					year = stoi(yearString);
+					month = stoi(monthString);
+					day = stoi(dayString);
 					//Invalid Date
 					if (!(isValidDate(day, month, year))) {
 						cout << "\nInvalid Date Input! Please try again with a valid date.\n";
@@ -366,9 +504,9 @@ void TerminateTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 				} while (!valid);
 				
 				target->DateTerminate = DateTerminate;
-				WriteTutorFile(TutorHead); //Modify and Update records in text file
+				
 				cout << TutorID << "'s date of termination is updated." << endl;
-				DeleteTutor(TutorHead);
+				DeleteTutor(&TutorHead);
 				TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
 				break;
 			case 2: //Return to Admin sub menu
@@ -393,14 +531,20 @@ void SearchStudentToModify(Tutor* TutorHead, Student* StudentHead, Admin* AdminH
 	do {
 		cout << "==========Search a Student to Modify==========" << endl;
 		cout << "Enter the student ID to modify: ";
-		cin >> StudentID;
+		getline(cin, StudentID);
+		while (StudentID.empty()) {
+			cout << "********INVALID INPUT********\nPlease enter the correct tutor ID format.\n" << endl;
+			cout << "Enter the student ID to modify: ";
+
+			//Clear previous input
+			cin.clear();
+			//Discard previous input
+			StudentID.clear();
+			getline(cin, StudentID);
+		}
 		//Trim Input
 		StudentID = trim(StudentID);
-		//Change small letter to capital letter if there are any
-		for_each(StudentID.begin(), StudentID.end(), [](char& c)
-			{
-				c = toupper(c);
-			});
+		
 		cout << endl;
 		cout << "Student's Record: " << endl;
 

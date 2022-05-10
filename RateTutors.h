@@ -22,10 +22,11 @@ void DisplayTutorsAndRate(Tutor* TutorHead, Student* StudentHead, Student* wante
 	do {
 		found = 0;
 		ptr = TutorHead;
+		TutorID.clear();
 		cout << "Enter the tutor ID to rate or Enter 'Y' to return to previous page: ";
 		cin.ignore();
 		getline(cin, TutorID);
-
+		cout << TutorID << endl;
 		if (TutorID == "Y" || TutorID == "y") {
 			StudentSubMenu(TutorHead, StudentHead, wantedstudent);
 		}

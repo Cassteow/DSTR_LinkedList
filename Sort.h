@@ -8,12 +8,15 @@ struct Tutor* SortedMergeID(Tutor*, Tutor*);
 struct Tutor* SortedMergeRating(Tutor*, Tutor*);
 struct Tutor* SortedMergeHourlyRate(Tutor*, Tutor*);
 struct Student* SortedMergeStudentID(Student*, Student*);
+
 void SplitList(Tutor*);
 void SplitListStudent(Student*);
-void MergeSortID(Tutor**);
-void MergeSortRating(Tutor**);
-void MergeSortHourlyRate(Tutor**);
-void MergeSortStudentID(Student**);
+
+void MergeSortForID(Tutor**);
+void MergeSortForRating(Tutor**);
+void MergeSortForHourlyRate(Tutor**);
+void MergeSortForStudentID(Student**);
+
 void TutorRecordsForAdminSubMenu(Tutor*, Student*, Admin*);
 
 /* Split the nodes of the given list into front and back halves,
@@ -96,9 +99,7 @@ struct Tutor* SortedMergeHourlyRate(Tutor* first, Tutor* second) {
 		return first;
 	}
 
-	//Select smaller value
-	/*ID1 = first->AverageRating;
-	ID2 = second->AverageRating;*/
+	
 	//pick either first or second and recur
 	if (first->HourlyRate <= second->HourlyRate) {
 		first->next = SortedMergeHourlyRate(first->next, second);
@@ -127,22 +128,10 @@ struct Tutor* SortedMergeID(Tutor* first, Tutor* second) {
 		return first;
 	}
 
-	//Select smaller value
-	string ID1 = first->TutorID;
-	string ID2 = second->TutorID;
 	//Convert ID digit into Integer to compare
-	int length1 = ID1.length();
-	int length2 = ID2.length();
-	string convert1 = "0";
-	string convert2 = "0";
-	for (int i = 1; i < length1; i++) { //int i = 1 as we need to skip the first character
-		convert1 = convert1 + ID1.at(i);
-	}
-	for (int i = 1; i < length2; i++) { //int i = 1 as we need to skip the first character
-		convert2 = convert2 + ID2.at(i);
-	}
-	int intID1 = stoi(convert1);
-	int intID2 = stoi(convert2);
+	int intID1 = RemoveTheFirstChar(first->TutorID);
+	int intID2 = RemoveTheFirstChar(second->TutorID);
+	//Select smaller value
 	//pick either first or second and recur
 	if (intID1 <= intID2) {
 		first->next = SortedMergeID(first->next, second);
@@ -159,7 +148,7 @@ struct Tutor* SortedMergeID(Tutor* first, Tutor* second) {
 	}
 }
 //Function to apply merge sort to a linked list based on Hourly Rate
-void MergeSortHourlyRate(Tutor** head) {
+void MergeSortForHourlyRate(Tutor** head) {
 
 	if (*head == NULL || (*head)->next == NULL) {
 		return;
@@ -169,14 +158,14 @@ void MergeSortHourlyRate(Tutor** head) {
 	SplitList(*head, &first, &second);
 
 	//Recur left and right halves
-	MergeSortHourlyRate(&first);
-	MergeSortHourlyRate(&second);
+	MergeSortForHourlyRate(&first);
+	MergeSortForHourlyRate(&second);
 	//Merge two sorted halves
 	*head = SortedMergeHourlyRate(first, second);
 }
 
 //Function to apply merge sort to a linked list based on Tutor ID
-void MergeSortID(Tutor** head) {
+void MergeSortForID(Tutor** head) {
 
 	if (*head == NULL || (*head)->next == NULL) {
 		return;
@@ -186,14 +175,14 @@ void MergeSortID(Tutor** head) {
 	SplitList(*head, &first, &second);
 
 	//Recur left and right halves
-	MergeSortID(&first);
-	MergeSortID(&second);
+	MergeSortForID(&first);
+	MergeSortForID(&second);
 	//Merge two sorted halves
 	*head = SortedMergeID(first, second);
 }
 
 //Function to apply merge sort to a linked list based on Average Ratings
-void MergeSortRating(Tutor** head) {
+void MergeSortForRating(Tutor** head) {
 
 	if (*head == NULL || (*head)->next == NULL) {
 		return;
@@ -203,8 +192,8 @@ void MergeSortRating(Tutor** head) {
 	SplitList(*head, &first, &second);
 
 	//Recur left and right halves
-	MergeSortRating(&first);
-	MergeSortRating(&second);
+	MergeSortForRating(&first);
+	MergeSortForRating(&second);
 	//Merge two sorted halves
 	*head = SortedMergeRating(first, second);
 }
@@ -221,22 +210,9 @@ struct Student* SortedMergeStudentID(Student* first, Student* second) {
 		return first;
 	}
 
-	//Select smaller value
-	string ID1 = first->StudentID;
-	string ID2 = second->StudentID;
-	//Convert ID digit into Integer to compare
-	int length1 = ID1.length();
-	int length2 = ID2.length();
-	string convert1 = "0";
-	string convert2 = "0";
-	for (int i = 1; i < length1; i++) { //int i = 1 as we need to skip the first character
-		convert1 = convert1 + ID1.at(i);
-	}
-	for (int i = 1; i < length2; i++) { //int i = 1 as we need to skip the first character
-		convert2 = convert2 + ID2.at(i);
-	}
-	int intID1 = stoi(convert1);
-	int intID2 = stoi(convert2);
+	
+	int intID1 = RemoveTheFirstChar(first->StudentID);
+	int intID2 = RemoveTheFirstChar(second->StudentID);
 	//pick either first or second and recur
 	if (intID1 <= intID2) {
 		first->next = SortedMergeStudentID(first->next, second);
@@ -254,7 +230,7 @@ struct Student* SortedMergeStudentID(Student* first, Student* second) {
 }
 
 //Function to apply merge sort to a linked list based on Tutor ID
-void MergeSortStudentID(Student** head) {
+void MergeSortForStudentID(Student** head) {
 
 	if (*head == NULL || (*head)->next == NULL) {
 		return;
@@ -264,8 +240,8 @@ void MergeSortStudentID(Student** head) {
 	SplitListStudent(*head, &first, &second);
 
 	//Recur left and right halves
-	MergeSortStudentID(&first);
-	MergeSortStudentID(&second);
+	MergeSortForStudentID(&first);
+	MergeSortForStudentID(&second);
 	//Merge two sorted halves
 	*head = SortedMergeStudentID(first, second);
 }

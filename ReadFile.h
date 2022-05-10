@@ -8,8 +8,8 @@
 
 using namespace std;
 
-void InsertAtEndForReadTutorFile(Tutor**, string, string, string, string, int, string, string, string, string, string, string, int, int, int);
-struct Tutor* InsertAtBeginningForReadTutorFile(Tutor**, string, string, string, string, int, string, string, string, string, string, string, int, int, int);
+//void InsertAtEndForReadTutorFile(Tutor**, string, string, string, string, int, string, string, string, string, string, string, int, int, int);
+void InsertAtBeginningForReadTutorFile(Tutor**, string, string, string, string, int, string, string, string, string, string, string, int, int, int);
 struct Tutor* ReadTutorFile();
 void InsertAtEndForReadStudentFile(Student**, string, string, string, string, string, string, string, string, string, string, string, int);
 struct Student* ReadStudentFile();
@@ -17,7 +17,8 @@ void InsertAtEndForReadAdminFile(Admin**, string, string);
 struct Admin* ReadAdminFile();
 
 
-struct Tutor* InsertAtBeginningForReadTutorFile(Tutor** head_ref, string id, string name, string join, string terminate, int hourly, string phone, string address, string centercode, string centername, string subcode, string subname, int totalratings, int noofratings, int averagerating) {
+void InsertAtBeginningForReadTutorFile(Tutor** TutorHead_ref, string id, string name, string join, string terminate, int hourly, string phone, string address, string centercode, string centername, string subcode, string subname, int totalratings, int noofratings, int averagerating) {
+	Tutor* ptr = *TutorHead_ref;
 	//Allocate new node
 	Tutor* NewNode = new Tutor();
 
@@ -37,55 +38,57 @@ struct Tutor* InsertAtBeginningForReadTutorFile(Tutor** head_ref, string id, str
 	NewNode->NoOfRatings = noofratings;
 	NewNode->AverageRating = averagerating;
 	//Make next node of new node as head of original linked list
-	NewNode->next = *head_ref;
+	NewNode->next = *TutorHead_ref;
 	//Make prev node of new node as NULL 
 	NewNode->prev = NULL;
-
-	//Point previous node member of head node to the new node
-	if (NewNode->next->prev != NULL) {
-		NewNode->next->prev = NewNode;
-	}
-	//Let head point to NewNode
-	*head_ref = NewNode;
-	return *head_ref;
-}
-
-void InsertAtEndForReadTutorFile(Tutor** head_ref, string id, string name, string join, string terminate, int hourly, string phone, string address, string centercode, string centername, string subcode, string subname, int totalratings, int noofratings, int averagerating) {
-	Tutor* NewNode = new Tutor();
-	Tutor* ptr = new Tutor();
-
-	NewNode->TutorID = id;
-	NewNode->Name = name;
-	NewNode->DateJoin = join;
-	NewNode->DateTerminate = terminate;
-	NewNode->HourlyRate = hourly;
-	NewNode->PhoneNumber = phone;
-	NewNode->Address = address;
-	NewNode->CenterCode = centercode;
-	NewNode->CenterName = centername;
-	NewNode->SubjectCode = subcode;
-	NewNode->SubjectName = subname;
-	NewNode->TotalRatings = totalratings;
-	NewNode->NoOfRatings = noofratings;
-	NewNode->AverageRating = averagerating;
-	NewNode->next = NULL;
-
-	ptr = *head_ref;
-
-	if (*head_ref == NULL) {
-		*head_ref = NewNode;
-		NewNode->prev = NULL;
+	if (ptr == NULL) {
+		*TutorHead_ref = NewNode;
 	}
 	else {
-		//Loop the linked list to the end 
-		while (ptr->next != NULL) {
-			ptr = ptr->next;
-		}
-		//insert new node to the end of the list
-		ptr->next = NewNode;
-		NewNode->prev = ptr;
+		ptr->prev = NewNode;
+		//Let head point to NewNode
+		*TutorHead_ref = NewNode;
+
 	}
+	
 }
+
+//void InsertAtEndForReadTutorFile(Tutor** head_ref, string id, string name, string join, string terminate, int hourly, string phone, string address, string centercode, string centername, string subcode, string subname, int totalratings, int noofratings, int averagerating) {
+//	Tutor* NewNode = new Tutor();
+//	Tutor* ptr = new Tutor();
+//
+//	NewNode->TutorID = id;
+//	NewNode->Name = name;
+//	NewNode->DateJoin = join;
+//	NewNode->DateTerminate = terminate;
+//	NewNode->HourlyRate = hourly;
+//	NewNode->PhoneNumber = phone;
+//	NewNode->Address = address;
+//	NewNode->CenterCode = centercode;
+//	NewNode->CenterName = centername;
+//	NewNode->SubjectCode = subcode;
+//	NewNode->SubjectName = subname;
+//	NewNode->TotalRatings = totalratings;
+//	NewNode->NoOfRatings = noofratings;
+//	NewNode->AverageRating = averagerating;
+//	NewNode->next = NULL;
+//
+//	ptr = *head_ref;
+//
+//	if (*head_ref == NULL) {
+//		*head_ref = NewNode;
+//		NewNode->prev = NULL;
+//	}
+//	else {
+//		//Loop the linked list to the end 
+//		while (ptr->next != NULL) {
+//			ptr = ptr->next;
+//		}
+//		//insert new node to the end of the list
+//		ptr->next = NewNode;
+//		NewNode->prev = ptr;
+//	}
+//}
 
 struct Tutor* ReadTutorFile() {
 	ifstream read("Tutor.txt");
@@ -113,7 +116,7 @@ struct Tutor* ReadTutorFile() {
 			getline(ss, noofrating, ',');
 			getline(ss, averagerating, ',');
 
-			InsertAtEndForReadTutorFile(&FullRecord, trim(id), trim(name), trim(join), trim(terminate), stoi(hourly), trim(phone), trim(address), trim(centercode), trim(centername), trim(subcode), trim(subname), stoi(totalrating), stoi(noofrating), stoi(averagerating));
+			InsertAtBeginningForReadTutorFile(&FullRecord, trim(id), trim(name), trim(join), trim(terminate), stoi(hourly), trim(phone), trim(address), trim(centercode), trim(centername), trim(subcode), trim(subname), stoi(totalrating), stoi(noofrating), stoi(averagerating));
 		}
 	}
 	else

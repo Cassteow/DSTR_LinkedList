@@ -11,9 +11,9 @@ using namespace std;
 struct Tutor* GetMiddleForTutor(Tutor**, Tutor**);
 struct Tutor* BinarySearchAlgorithmForTutor(Tutor*, string);
 
-void SearchTutorByTutorID(Tutor**);
+void SearchTutorByTutorID(Tutor*);
 int LinearSearchAlgorithm(Tutor*, int);
-void SearchTutorByRating(Tutor**);
+void SearchTutorByRating(Tutor*);
 
 struct Student* GetMiddleForStudent(Student**, Student**);
 struct Student* BinarySearchAlgorithmForStudent(Student*, string);
@@ -22,6 +22,10 @@ void DisplayOneStudent(Student*);
 //the function definition is at ExtraFunction.h
 string trim(string&);
 int RemoveTheFirstChar(string);
+bool checkIntInput(string);
+
+//the function definition is at Sort.h
+void MergeSortForStudentID(Student**);
 
 struct Tutor* GetMiddleForTutor(Tutor** start_ref, Tutor** last_ref) {
 	Tutor* start = *start_ref;
@@ -42,7 +46,9 @@ struct Tutor* GetMiddleForTutor(Tutor** start_ref, Tutor** last_ref) {
 }
 
 struct Tutor* BinarySearchAlgorithmForTutor(Tutor* head, string id) {
-	
+	//Sort Tutor Record before executing binary search function 
+	MergeSortForID(&head);
+
 	Tutor* start = head;
 	Tutor* last = NULL;
 	int idInt = RemoveTheFirstChar(id);
@@ -71,18 +77,28 @@ struct Tutor* BinarySearchAlgorithmForTutor(Tutor* head, string id) {
 	return NULL;
 }
 
-void SearchTutorByTutorID(Tutor** head_ref) {
+void SearchTutorByTutorID(Tutor* TutorHead) {
 	string TutorID;
 	Tutor* found;
 	cout << "\n==========Search a Tutor by Tutor ID==========" << endl;
 	cout << "Enter the tutor ID to search: ";
-	cin >> TutorID;
+	getline(cin, TutorID);
+	while (TutorID.empty()) {
+		cout << "********INVALID INPUT********\nPlease enter the correct tutor ID format.\n" << endl;
+		cout << "Enter the tutor ID to search: ";
+
+		//Clear previous input
+		cin.clear();
+		//Discard previous input
+		TutorID.clear();
+		getline(cin, TutorID);
+	}
 	cout << endl;
 	cout << "\nSearch Result: " << endl;
 	//Trim Input
 	TutorID = trim(TutorID);
 
-	found = BinarySearchAlgorithmForTutor(*head_ref, TutorID);
+	found = BinarySearchAlgorithmForTutor(TutorHead, TutorID);
 	if (found == NULL)
 		cout << "Tutor ID " << TutorID << " does not exist in Tutor.txt." << endl;
 	else {
@@ -112,16 +128,31 @@ int LinearSearchAlgorithm(Tutor* head, int rating) {
 	return found;
 }
 
-void SearchTutorByRating(Tutor** head_ref) {
+void SearchTutorByRating(Tutor* TutorHead) {
 	int Rating;
+	string userInput;
 
 	cout << "\n==========Search Tutors by Rating==========" << endl;
 	cout << "Enter the rating to search: ";
-	cin >> Rating;
+	userInput.clear();
+	getline(cin, userInput);
+	//Input Validation (ensure input is integer)
+	while (!(checkIntInput(userInput))) {
+		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		cout << "\n==========Search Tutors by Rating==========" << endl;
+		cout << "Enter the rating to search: ";
+
+		//Clear previous input
+		cin.clear();
+		//Discard previous input
+		userInput.clear();
+		getline(cin, userInput);
+	}
+	Rating = stoi(userInput);
 	cout << endl;
 
 	cout << "\nSearch Result: " << endl;
-	if (LinearSearchAlgorithm(*head_ref, Rating) == 0)
+	if (LinearSearchAlgorithm(TutorHead, Rating) == 0)
 		cout << "No tutor has rating of " << Rating << "." << endl;
 
 }
@@ -145,6 +176,9 @@ struct Student* GetMiddleForStudent(Student** start_ref, Student** last_ref) {
 }
 
 struct Student* BinarySearchAlgorithmForStudent(Student* head, string id) {
+	//Sort Student record by ID before starting binary search
+	MergeSortForStudentID(&head);
+
 	Student* start = head;
 	Student* last = NULL;
 	int idInt = RemoveTheFirstChar(id);

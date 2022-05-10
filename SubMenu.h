@@ -9,39 +9,45 @@ using namespace std;
 void TutorRecordsForAdminSubMenu(Tutor*, Student*, Admin*);
 void StudentRecordsForAdminSubMenu(Tutor*, Student*, Admin*);
 void ReportForAdminSubMenu(Tutor*, Student*, Admin*);
+
 void AdminSubMenu(Tutor*, Student*, Admin*);
 void StudentSubMenu(Tutor*, Student*, Student*);
+
 void SearchTutorsPage(Tutor*, Student*, Admin*);
+
+//the function definition is at Main.cpp
 void MainLandingPage();
 
-void WriteFilesBeforeEnd(Tutor*, Student*);
 //the function definition is at WriteFile.h
+void WriteFilesBeforeEnd(Tutor*, Student*);
+
 //the function definitions of three function prototype below are at Edit.h
 void ModifyTutor(Tutor*, Student*, Admin*);
 void TerminateTutor(Tutor*, Student*, Admin*);
 void SearchStudentToModify(Tutor*, Student*, Admin*);
-bool AddNewTutor(Tutor*);
+bool AddNewTutor(Tutor**);
 struct Tutor* ReadTutorFile();
-void MergeSortStudentID(Student**);
-void DeleteTutor(Tutor*);
+struct Tutor* ReadTutorFile();
+void DeleteTutor(Tutor**);
+
+//the function definition is at Sort.h
+void MergeSortForStudentID(Student**);
 
 //TUTOR RECORDS FOR ADMINS
 void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
+	string userInput;
 	int option;
-	char repeat;
+	string repeat;
 	bool newTutorAdded = false;
-
-	////Update Tutor Records and Delete Records with Termination Date more than 180 days ago
-	//DeleteTutor(TutorHead);
-	//TutorHead = ReadTutorFile();
-
+	MergeSortForID(&TutorHead);
 	cout << "\n====================Tutor Records====================" << endl;
 	cout << "1. Add New Tutor Record" << endl << "2. Display All Tutor Records" << endl << "3. Search Tutors(by Tutor ID or Rating)" << endl;
 	cout << "4. Sort and Display(by Tutors ID or Tutors Hourly Pay Rate or Tutors Rating)" << endl;
 	cout << "5. Modify a Tutor Record" << endl << "6. Terminate a Tutor Record" << endl << "7. Exit to Admin Menu" << endl;
 	cout << "Enter your choice here: ";
-	//Input Validation 
-	while (!(cin >> option)) {
+	getline(cin, userInput);
+	//Input Validation (ensure input is integer)
+	while (!(checkIntInput(userInput))) {
 		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
 		cout << "====================Tutor Records====================" << endl;
 		cout << "1. Add New Tutor Record" << endl << "2. Display All Tutor Records" << endl << "3. Search Tutors(by Tutor ID or Rating)" << endl;
@@ -51,15 +57,15 @@ void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* 
 		//Clear previous input
 		cin.clear();
 		//Discard previous input
-		cin.ignore(100, '\n');
+		userInput.clear();
+		getline(cin, userInput);
 	}
+	option = stoi(userInput);
 
 	switch (option) {
 	case 1: //ADD NEW TUTOR RECORD
 		//Call Add new tutor function and return boolean to check whether operation is successful
-		newTutorAdded = AddNewTutor(TutorHead);
-		//Read new updated linked list into TutorHead from Tutor.txt file
-		TutorHead = ReadTutorFile();
+		newTutorAdded = AddNewTutor(&TutorHead);
 
 		if (newTutorAdded)
 			cout << "\nNew tutor successfully added!" << endl;
@@ -67,9 +73,8 @@ void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* 
 			cout << "\nNew tutor not added due to system error, please try again later." << endl;
 
 		cout << "Enter 'Y' to exit the entire program or Press any key to return to Tutor Records Page: ";
-		cin >> repeat;
-
-		if (repeat == 'Y' || repeat == 'y') {
+		getline(cin, repeat);
+		if (repeat == "Y" || repeat == "y") {
 			WriteFilesBeforeEnd(TutorHead, StudentHead);
 			exit(0);
 		}
@@ -83,9 +88,8 @@ void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* 
 		cout << "\n====================Display All Tutor Records====================" << endl;
 		DisplayAllTutorsForAdmin(TutorHead);
 		cout << "Enter 'Y' to exit the entire program or Press any key to return to Tutor Records Page: ";
-		cin >> repeat;
-
-		if (repeat == 'Y' || repeat == 'y') {
+		getline(cin, repeat);
+		if (repeat == "Y" || repeat == "y") {
 			WriteFilesBeforeEnd(TutorHead, StudentHead);
 			exit(0);
 		}
@@ -97,24 +101,27 @@ void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* 
 		SearchTutorsPage(TutorHead, StudentHead, AdminHead);
 		break;
 	case 4: //SORT AND DISPLAY TUTOR RECORD
-		//Read new updated linked list into TutorHead from Tutor.txt file
-		TutorHead = ReadTutorFile();
 		cout << "\n====================Sort and Display Tutor Record====================" << endl;
-		cout << "1. Sort via Tutor ID" << endl << "2. Sort via Tutor Hourly Pay Rate" << endl << "3. Sort via Tutor Ratings" << endl;
+		cout << "1. Sort via Tutor ID" << endl << "2. Sort via Tutor Hourly Pay Rate" << endl << "3. Sort via Tutor Ratings" << endl 
+			<< "4. Exit to Tutor Records page" << endl;
 		cout << "Enter your choice here: ";
-		//Input Validation
-		while (!(cin >> option)) {
+		userInput.clear();
+		getline(cin, userInput);
+		//Input Validation (ensure input is integer)
+		while (!(checkIntInput(userInput))) {
 			cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
 
 			cout << "\n====================Sort and Display Tutor Record====================" << endl;
-			cout << "1. Sort via Tutor ID" << endl << "2. Sort via Tutor Hourly Pay Rate" << endl << "3. Sort via Tutor Ratings" << endl;
+			cout << "1. Sort via Tutor ID" << endl << "2. Sort via Tutor Hourly Pay Rate" << endl << "3. Sort via Tutor Ratings" 
+				<< endl << "4. Exit to Tutor Records page" << endl;
 			cout << "Enter your choice here: ";
-
 			//Clear previous input
 			cin.clear();
 			//Discard previous input
-			cin.ignore(100, '\n');
+			userInput.clear();
+			getline(cin, userInput);
 		}
+		option = stoi(userInput);
 
 		switch (option) {
 		case 1: //Sort via Tutor ID
@@ -126,8 +133,10 @@ void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* 
 		case 3: //Sort via Ratings 
 			DisplaySortedRating(TutorHead, StudentHead, AdminHead);
 			TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
+		case 4: 
+			TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
 		default:
-			cout << "Invalid number entered." << endl << "Please try again." << endl << endl << endl;
+			cout << "Invalid number entered." << endl << endl;
 			TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
 		}		
 		break;
@@ -135,12 +144,7 @@ void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* 
 		ModifyTutor(TutorHead, StudentHead, AdminHead);
 		break;
 	case 6: //TERMINATE TUTOR
-		do {
-			TerminateTutor(TutorHead, StudentHead, AdminHead);
-			cout << "Enter 'Y' to continue deleting or Press any key to return to Tutor Records Page: ";
-			cin >> repeat;
-		} while (repeat == 'Y' || repeat == 'y');
-		TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
+		TerminateTutor(TutorHead, StudentHead, AdminHead);
 		break;
 	case 7: //
 		AdminSubMenu(TutorHead, StudentHead, AdminHead);
@@ -154,13 +158,16 @@ void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* 
 }
 
 void StudentRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
+	string userInput;
 	int option;
 	cout << "\n====================Student Records====================" << endl;
 	cout << "1. Sort by Students ID and Display" << endl << "2. Search a Student by Student ID and Modify" << endl;
 	cout << "3. Exit to Admin Sub-Menu" << endl;
 	cout << "Enter your choice here: ";
-	//Input Validation
-	while (!(cin >> option)) {
+	userInput.clear();
+	getline(cin, userInput);
+	//Input Validation (ensure input is integer)
+	while (!(checkIntInput(userInput))) {
 		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
 		cout << "\n====================Student Records====================" << endl;
 		cout << "1. Sort by Students ID and Display" << endl << "2. Search a Student by Student ID and Modify" << endl;
@@ -170,12 +177,13 @@ void StudentRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin
 		//Clear previous input
 		cin.clear();
 		//Discard previous input
-		cin.ignore(100, '\n');
+		userInput.clear();
+		getline(cin, userInput);
 	}
-
+	option = stoi(userInput);
 	switch (option) {
 	case 1:
-		MergeSortStudentID(&StudentHead);
+		MergeSortForStudentID(&StudentHead);
 		DisplayAllStudents(StudentHead);
 		StudentRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
 	case 2:
@@ -191,13 +199,13 @@ void StudentRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin
 }
 
 void ReportForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
-	char option;
+	string option;
 	cout << "\n====================Report====================" << endl;
 	CountTutors(&TutorHead);
 	
 	cout << "Enter 'Y' to exit the entire program or Press any key to return to Tutor Sub-Menu: ";
-	cin >> option;
-	if (option == 'Y' || option == 'y') {
+	getline(cin, option);
+	if (option == "Y" || option == "y") {
 		WriteFilesBeforeEnd(TutorHead, StudentHead);
 		exit(0);
 	}
@@ -207,7 +215,7 @@ void ReportForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminH
 
 void AdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	int submenu;
-
+	string userInput;
 	cout << "\nAdmin Sub-Menu: " << endl;
 	cout << "1. Tutor Records" << endl;
 	cout << "2. Student Records" << endl;
@@ -215,8 +223,9 @@ void AdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	cout << "4. Logout to Main Menu" << endl;
 	cout << "5. Exit the system" << endl;
 	cout << "Enter your choice here: ";
-	//Input validation
-	while (!(cin >> submenu)) {
+	getline(cin, userInput);
+	//Input Validation (ensure input is integer)
+	while (!(checkIntInput(userInput))) {
 		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
 		cout << "\nAdmin Sub-Menu: " << endl;
 		cout << "1. Tutor Records" << endl;
@@ -229,9 +238,10 @@ void AdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 		//Clear previous input
 		cin.clear();
 		//Discard previous input
-		cin.ignore(100, '\n');
+		userInput.clear();
+		getline(cin, userInput);
 	}
-	cout << endl;
+	submenu = stoi(userInput);
 
 	switch (submenu) {
 	case 1:
@@ -258,8 +268,8 @@ void AdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 
 void StudentSubMenu(Tutor* TutorHead, Student* StudentHead, Student* wantedstudent) {
 	int submenu;
-	char repeat;
-
+	string repeat;
+	string userInput;
 	cout << "\nStudent Sub-Menu: " << endl;
 	cout << "1. View My Profile" << endl;
 	cout << "2. View All The Tutors in Your Center" << endl;
@@ -267,7 +277,10 @@ void StudentSubMenu(Tutor* TutorHead, Student* StudentHead, Student* wantedstude
 	cout << "4. Logout to Main Menu" << endl;
 	cout << "5. Exit the system" << endl;
 	cout << "Enter your choice here: ";
-	while (!(cin >> submenu)) {
+	userInput.clear();
+	getline(cin, userInput);
+	//Input Validation (ensure input is integer)
+	while (!(checkIntInput(userInput))) {
 		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
 		cout << "\nStudent Sub-Menu: " << endl;
 		cout << "1. View My Profile" << endl;
@@ -280,9 +293,10 @@ void StudentSubMenu(Tutor* TutorHead, Student* StudentHead, Student* wantedstude
 		//Clear previous input
 		cin.clear();
 		//Discard previous input
-		cin.ignore(100, '\n');
-
+		userInput.clear();
+		getline(cin, userInput);
 	}
+	submenu = stoi(userInput);
 
 	switch (submenu) {
 	case 1:
@@ -290,8 +304,8 @@ void StudentSubMenu(Tutor* TutorHead, Student* StudentHead, Student* wantedstude
 		cout << "\n====================My Profile====================" << endl;
 		DisplayOneStudent(wantedstudent);
 		cout << "Enter 'Y' to exit the entire program or Press any key to return to Student Sub-Menu: ";
-		cin >> repeat;
-		if (repeat == 'Y' || repeat == 'y') {
+		getline(cin, repeat);
+		if (repeat == "Y" || repeat == "y") {
 			WriteFilesBeforeEnd(TutorHead, StudentHead);
 			exit(0);
 		}
@@ -303,8 +317,8 @@ void StudentSubMenu(Tutor* TutorHead, Student* StudentHead, Student* wantedstude
 		cout << "\n====================Display All The Tutors in Your Center====================" << endl;
 		DisplayTutorsForStudent(TutorHead, wantedstudent->CenterCode);
 		cout << "Enter 'Y' to exit the entire program or Press any key to return to Student Sub-Menu: ";
-		cin >> repeat;
-		if (repeat == 'Y' || repeat == 'y') {
+		getline(cin, repeat);
+		if (repeat == "Y" || repeat == "y") {
 			WriteFilesBeforeEnd(TutorHead, StudentHead);
 			exit(0);
 		}
@@ -330,11 +344,15 @@ void StudentSubMenu(Tutor* TutorHead, Student* StudentHead, Student* wantedstude
 
 void SearchTutorsPage(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	int search;
-	char repeat;
+	string repeat;
+	string userInput;
 	cout << "\n====================Search Tutors====================" << endl;
 	cout << "1. Search a tutor by tutor ID" << endl << "2. Search tutors by rating" << endl << "3. Exit to Tutor Records Page" << endl;
 	cout << "Enter your choice here: ";
-	while (!(cin >> search)) {
+	userInput.clear();
+	getline(cin, userInput);
+	//Input Validation (ensure input is integer)
+	while (!(checkIntInput(userInput))) {
 		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
 		cout << "\n====================Search Tutors====================" << endl;
 		cout << "1. Search a tutor by tutor ID" << endl << "2. Search tutors by rating" << endl << "3. Exit to Tutor Records Page" << endl;
@@ -343,26 +361,29 @@ void SearchTutorsPage(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) 
 		//Clear previous input
 		cin.clear();
 		//Discard previous input
-		cin.ignore(100, '\n');
+		userInput.clear();
+		getline(cin, userInput);
 	}
+	search = stoi(userInput);
+
 	switch (search) {
 	case 1:
 		do {
-			SearchTutorByTutorID(&TutorHead);
+			SearchTutorByTutorID(TutorHead);
 			cout << endl;
 			cout << "Enter 'Y' to continue searching via tutor ID or Press any key to return to Search Tutors Page: ";
-			cin >> repeat;
-		} while (repeat == 'Y' || repeat == 'y');
+			getline(cin, repeat);
+		} while (repeat == "Y" || repeat == "y");
 
 		SearchTutorsPage(TutorHead, StudentHead, AdminHead);
 		break;
 	case 2:
 		do {
-			SearchTutorByRating(&TutorHead);
+			SearchTutorByRating(TutorHead);
 			cout << endl;
 			cout << "Enter 'Y' to continue searching via rating or Press any key to return to Search Tutors Page: ";
-			cin >> repeat;
-		} while (repeat == 'Y' || repeat == 'y');
+			getline(cin, repeat);
+		} while (repeat == "Y" || repeat == "y");
 
 		SearchTutorsPage(TutorHead, StudentHead, AdminHead);
 		break;

@@ -15,9 +15,11 @@ void DisplaySortedRating(Tutor*, Student*, Admin*);
 void DisplaySortedHourlyRate(Tutor*, Student*, Admin*);
 void DisplayIndividualTutor(Tutor*, Tutor*, Student*, Admin*);
 
-void MergeSortID(Tutor**);
-void MergeSortRating(Tutor**);
-void MergeSortHourlyRate(Tutor**);
+//Function Definitions of the function prototypes below are included at Sort.h
+void MergeSortForID(Tutor**);
+void MergeSortForRating(Tutor**);
+void MergeSortForHourlyRate(Tutor**);
+//Function Definition of the function prototype below is included at SubMenu.h
 void TutorRecordsForAdminSubMenu(Tutor*, Student*, Admin*);
 
 void DisplayAllTutorsForAdmin(Tutor* head) {
@@ -107,21 +109,21 @@ void DisplayOneTutorForAdmin(Tutor* one) {
 //Function to Display Sorted Linked List (ID)
 void DisplaySortedID(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	Tutor* temp = TutorHead;
-	MergeSortID(&temp);
+	MergeSortForID(&TutorHead);
 	cout << "\n";
 	DisplayIndividualTutor(temp, TutorHead, StudentHead, AdminHead);
 }
 //Function to Display Sorted Linked List (Rating)
 void DisplaySortedRating(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	Tutor* temp = TutorHead;
-	MergeSortRating(&temp);
+	MergeSortForRating(&TutorHead);
 	cout << "\n";
 	DisplayIndividualTutor(temp, TutorHead, StudentHead, AdminHead);
 }
 //Function to Display Sorted Linked List (Hourly Rate)
 void DisplaySortedHourlyRate(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	Tutor* temp = TutorHead;
-	MergeSortHourlyRate(&temp);
+	MergeSortForHourlyRate(&TutorHead);
 	cout << "\n";
 	DisplayIndividualTutor(temp, TutorHead, StudentHead, AdminHead);
 }

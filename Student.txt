@@ -3,4 +3,5 @@ S2, GAN JIN HONG, 012-5159886, MGJH001, P001C, Puchong, T1, Nope, Nope, Nope, No
 S3, GAN JIN AN, 011-27568896, Pa777, B001C, Bukit Jalil, T5, T2, T1, Nope, Nope, 3
 S4, LIM KE XIN, 018-6623789, BJalil56, I001C, Ipoh, T001, T2, T5, Nope, Nope, 3
 S6, TEO JUN TIAN, 015-4455890, Crs2345, I001C, Ipoh, T001, T2, T3, T4, T5, 5
-S8, TEOW JING WERN, 01781718298, Teow123, I001C, Ipoh, Nope, Nope, Nope, Nope, Nope, 0
+S8, TEOW JING WERN, 01781718298, Teow123, I001C, Ipoh, T2, Nope, Nope, Nope, Nope, 0
+S7, JOSEPH TAN, 0192019001, S7, I001C, Ipoh, T2, T7, Nope, Nope, Nope, 0
