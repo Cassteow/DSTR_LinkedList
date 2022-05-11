@@ -24,9 +24,7 @@ void DisplayTutorsAndRate(Tutor* TutorHead, Student* StudentHead, Student* wante
 		ptr = TutorHead;
 		TutorID.clear();
 		cout << "Enter the tutor ID to rate or Enter 'Y' to return to previous page: ";
-		cin.ignore();
 		getline(cin, TutorID);
-		cout << TutorID << endl;
 		if (TutorID == "Y" || TutorID == "y") {
 			StudentSubMenu(TutorHead, StudentHead, wantedstudent);
 		}
@@ -35,20 +33,20 @@ void DisplayTutorsAndRate(Tutor* TutorHead, Student* StudentHead, Student* wante
 			if (wantedstudent->TutorID[j] == TutorID) {
 				found = 1;
 				cout << "Please rate for Tutor " << TutorID << "(rating from 1-5, where 1 is 'very poor performance' and 5 is 'excellent performance'): ";
-				cin >> rating;
-
-				while (ptr != NULL) {
-					if (ptr->TutorID == TutorID) {
-						ptr->TotalRatings = ptr->TotalRatings + rating;
-						ptr->NoOfRatings++;
-						ptr->AverageRating = ptr->TotalRatings / ptr->NoOfRatings;
-						cout << "Rating for Tutor " << TutorID << " successfully." << endl;
-						DisplayTutorsAndRate(TutorHead, StudentHead, wantedstudent);
-						break;
-					}
-					ptr = ptr->next;
-				}
+				cin >> rating;			
 			}
+		}
+
+		while (ptr != NULL) {
+			if (ptr->TutorID == TutorID) {
+				ptr->TotalRatings = ptr->TotalRatings + rating;
+				ptr->NoOfRatings++;
+				ptr->AverageRating = ptr->TotalRatings / ptr->NoOfRatings;
+				cout << "Rating for Tutor " << TutorID << " successfully." << endl;
+				DisplayTutorsAndRate(TutorHead, StudentHead, wantedstudent);
+				break;
+			}
+			ptr = ptr->next;
 		}
 
 		if (found == 0) {

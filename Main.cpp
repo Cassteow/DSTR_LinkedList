@@ -51,9 +51,10 @@ void MainLandingPage() {
 	cout << "Enter your choice here: ";
 	userInput.clear();
 	getline(cin, userInput);
+	userInput = trim(userInput);
 	//Input Validation (ensure input is integer)
 	while (!(checkIntInput(userInput))) {
-		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		cout << "Invalid number entered." << endl << "Please try again." << endl << endl << endl;
 
 		cout << "====================Tutors Management System====================" << endl;
 		cout << "===================" << CorrectWeekDayTime(time.tm_wday) << " " << CorrectMonthTime(time.tm_mon) << " " << time.tm_mday << " " << time.tm_hour << ":" << time.tm_min << ":" << time.tm_sec << " " << 1900 + time.tm_year << "====================" << endl;
@@ -66,6 +67,7 @@ void MainLandingPage() {
 		//Discard previous input
 		userInput.clear();
 		getline(cin, userInput);
+		userInput = trim(userInput);
 	}
 	login = stoi(userInput);
 	switch (login) {
@@ -76,7 +78,7 @@ void MainLandingPage() {
 			cout << "Enter your admin ID here: ";
 			getline(cin, id);
 			while (id.empty()) {
-				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+				cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 				cout << "Enter your admin ID here: ";
 
 				//Clear previous input
@@ -89,7 +91,7 @@ void MainLandingPage() {
 			cout << "Enter your password here: ";
 			getline(cin, password);
 			while (password.empty()) {
-				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+				cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 				cout << "Enter your password here: ";
 
 				//Clear previous input
@@ -107,6 +109,7 @@ void MainLandingPage() {
 			else {
 				cout << "Enter 'Y' to try again or Press any key to return to main menu: ";
 				getline(cin, repeat);
+				repeat = trim(repeat);
 			}
 		} while (repeat == "Y" || repeat == "y");
 
@@ -125,7 +128,7 @@ void MainLandingPage() {
 			cout << "Enter your student ID here: ";
 			getline(cin, id);
 			while (id.empty()) {
-				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+				cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 				cout << "Enter your student ID here: ";
 
 				//Clear previous input
@@ -137,7 +140,7 @@ void MainLandingPage() {
 			cout << "Enter your password here: ";
 			getline(cin, password);
 			while (password.empty()) {
-				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+				cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 				cout << "Enter your password here: ";
 
 				//Clear previous input
@@ -158,7 +161,8 @@ void MainLandingPage() {
 			}
 			else {
 				cout << "Enter 'Y' to try again or Press any key to return to main menu: ";
-				cin >> repeat;
+				getline(cin, repeat);
+				repeat = trim(repeat);
 			}
 		} while (repeat == "Y" || repeat == "y");
 
@@ -172,19 +176,21 @@ void MainLandingPage() {
 		cout << "----------Register New Student----------" << endl;
 		cout << "Enter your name here: ";
 		getline(cin, name);
+		name = trim(name);
 		//Ensure name input is valid
 		while (!checkStringInput(name)) {
-			cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+			cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 			cout << "Enter your name here: ";
 			name.clear();
 			cin.clear();
 			getline(cin, name);
+			name = trim(name);
 		}
 
 		cout << "Enter your phone number here: "; //**** ADD VALIDATE PHONE NUMBER
 		getline(cin, phone);
 		while (!(checkIntInput(phone))) {
-			cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+			cout << "Invalid phone number entered." << endl << "Please try again." << endl << endl << endl;
 			cout << "Enter your phone number here: ";
 			//Clear previous input
 			cin.clear();
@@ -220,7 +226,7 @@ void MainLandingPage() {
 		cout << "Enter your password here: ";
 		getline(cin, password);
 		while (password.empty()) {
-			cout << "********INVALID INPUT********\nPassword cannot be empty.\n" << endl;
+			cout << "Password cannot be empty." << endl << "Please try again." << endl << endl << endl;
 			cout << "Enter your password here: ";
 			//Clear previous input
 			cin.clear();

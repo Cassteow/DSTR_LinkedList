@@ -84,7 +84,7 @@ void SearchTutorByTutorID(Tutor* TutorHead) {
 	cout << "Enter the tutor ID to search: ";
 	getline(cin, TutorID);
 	while (TutorID.empty()) {
-		cout << "********INVALID INPUT********\nPlease enter the correct tutor ID format.\n" << endl;
+		cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 		cout << "Enter the tutor ID to search: ";
 
 		//Clear previous input
@@ -97,13 +97,19 @@ void SearchTutorByTutorID(Tutor* TutorHead) {
 	cout << "\nSearch Result: " << endl;
 	//Trim Input
 	TutorID = trim(TutorID);
-
+	
 	found = BinarySearchAlgorithmForTutor(TutorHead, TutorID);
+
 	if (found == NULL)
 		cout << "Tutor ID " << TutorID << " does not exist in Tutor.txt." << endl;
 	else {
-		Tutor* target = found;
-		DisplayOneTutorForAdmin(target);
+		if (TutorID[0] == 'T' || TutorID[0] == 't') {
+			Tutor* target = found;
+			DisplayOneTutorForAdmin(target);
+		}
+		else {
+			cout << "Tutor ID " << TutorID << " does not exist in Tutor.txt." << endl;
+		}	
 	}
 }
 
@@ -138,7 +144,7 @@ void SearchTutorByRating(Tutor* TutorHead) {
 	getline(cin, userInput);
 	//Input Validation (ensure input is integer)
 	while (!(checkIntInput(userInput))) {
-		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 		cout << "\n==========Search Tutors by Rating==========" << endl;
 		cout << "Enter the rating to search: ";
 

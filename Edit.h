@@ -18,6 +18,8 @@ void SearchStudentToModify(Tutor*, Student*, Admin*);
 void ModifyStudentPage(Tutor*, Student*, Admin*, Student*, string);
 void AddATutorForStudent(Tutor*, Student*, Admin*, Student*, string);
 void RemoveATutorForStudent(Tutor*, Student*, Admin*, Student*, string);
+bool NoRepeatTutorForOneStudent(Tutor*, Student*, string);
+bool AValidTutorForStudents(Tutor*, string);
 
 //Function for System to Automatically Delete Tutor Record if Termination Date >= 180 days
 void DeleteTutor(Tutor** TutorHead_ref) {
@@ -87,7 +89,7 @@ bool AddNewTutor(Tutor** TutorHead_ref) {
 	getline(cin, name);
 	//Ensure name input is valid
 	while (!checkStringInput(name)) {
-		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 		cout << "Enter new tutor name: ";
 		name.clear();
 		cin.clear();
@@ -99,7 +101,7 @@ bool AddNewTutor(Tutor** TutorHead_ref) {
 		cout << "Enter year of joining date for tutor (format - YYYY): ";
 		getline(cin, yearString);
 		while (!checkIntInput(yearString)) {
-			cout << "\nWrong Year Format Input! Please try again with integers only.\n";
+			cout << "Invalid year input entered." << endl << "Please try again." << endl << endl << endl;
 			cout << "Enter year of joining date for tutor (format - YYYY): ";
 			//Discard previous input
 			yearString.clear();
@@ -112,7 +114,7 @@ bool AddNewTutor(Tutor** TutorHead_ref) {
 		cout << "Enter month of joining date for tutor (format - MM): ";
 		getline(cin, monthString);
 		while (!checkIntInput(monthString)) {
-			cout << "\nWrong Month Format Input! Please try again with integers only.\n";
+			cout << "Invalid month input entered." << endl << "Please try again." << endl << endl << endl;
 			cout << "Enter month of joining date for tutor (format - MM): ";
 			//Clear previous input
 			cin.clear();
@@ -125,7 +127,7 @@ bool AddNewTutor(Tutor** TutorHead_ref) {
 		cout << "Enter day of joining date for tutor (format - DD): ";
 		getline(cin, dayString);
 		while (!checkIntInput(dayString)) {
-			cout << "\nWrong Day Format Input! Please try again with integers only.\n";
+			cout << "Invalid day input entered." << endl << "Please try again." << endl << endl << endl;
 			cout << "Enter day of joining date for tutor (format - DD): ";
 			//Clear previous input
 			cin.clear();
@@ -139,7 +141,7 @@ bool AddNewTutor(Tutor** TutorHead_ref) {
 		day = stoi(dayString);
 		//Invalid Date
 		if (!(isValidDate(day, month, year))) {
-			cout << dayString << monthString << yearString << "Invalid Date Input! Please try again with a valid date.\n ";
+			cout << "Invalid date input entered." << endl << "Please try again." << endl << endl << endl;
 			dayString.clear();
 			monthString.clear();
 			yearString.clear();
@@ -174,7 +176,7 @@ bool AddNewTutor(Tutor** TutorHead_ref) {
 	cout << "Enter Tutor Phone Number: ";
 	getline(cin, phone);
 	while (!(checkIntInput(phone))) {
-		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;;
 		cout << "Enter Tutor Phone Number: ";
 		//Clear previous input
 		cin.clear();
@@ -186,7 +188,7 @@ bool AddNewTutor(Tutor** TutorHead_ref) {
 	cout << "Enter Tutor Address: ";
 	getline(cin, address);
 	while (address.empty()) {
-		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 		cout << "Enter Tutor Address: ";
 		//Clear previous input
 		cin.clear();
@@ -253,7 +255,7 @@ bool AddNewTutor(Tutor** TutorHead_ref) {
 	cout << "Enter hourly rate (in RM) for tutor: RM";
 	getline(cin, hourlyRateString);
 	while (!(checkIntInput(hourlyRateString))) {
-		cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 		cout << "Enter hourly rate (in RM) for tutor: RM";
 		//Clear previous input
 		cin.clear();
@@ -272,12 +274,14 @@ bool AddNewTutor(Tutor** TutorHead_ref) {
 void ModifyTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	int option, ValidChoice;
 	string TutorID, modification, userInput, repeat;
+	Tutor* found;
 
 	cout << "\n==========Modify a Tutor Record==========" << endl;
 	cout << "Enter the tutor ID to modify: ";
 	getline(cin, TutorID);
+	TutorID = trim(TutorID);
 	while (TutorID.empty()) {
-		cout << "********INVALID INPUT********\nPlease enter the correct tutor ID format.\n" << endl;
+		cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 		cout << "Enter the tutor ID to modify: ";
 
 		//Clear previous input
@@ -285,93 +289,120 @@ void ModifyTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 		//Discard previous input
 		TutorID.clear();
 		getline(cin, TutorID);
+		TutorID = trim(TutorID);
 	}
-	TutorID = trim(TutorID);
 	cout << endl;
 	cout << "Tutor's Record: " << endl;
+	found = BinarySearchAlgorithmForTutor(TutorHead, TutorID);
 	//Search for tutor ID to be modified
-	if (BinarySearchAlgorithmForTutor(TutorHead, TutorID) == NULL) { //If ID cannot be found
+	if (found == NULL) { //If ID cannot be found
 		cout << "Tutor ID " << TutorID << " does not exist in Tutor.txt." << endl;
 		cout << "Please try again." << endl << endl;
 		ModifyTutor(TutorHead, StudentHead, AdminHead);
 	}
 	else { //ID Found and display
-		Tutor* target = BinarySearchAlgorithmForTutor(TutorHead, TutorID);
-		DisplayOneTutorForAdmin(target);
-
-		do {
-			//Select choice to modify which specific information
-			ValidChoice = 0;
-			cout << "Enter '1' to modify tutor's phone" << endl;
-			cout << "Enter '2' to modify tutor's address" << endl;
-			cout << "Enter '3' to return to Tutor Record Page" << endl;
-			cout << "Enter your choice here: ";
-			userInput.clear();
-			getline(cin, userInput);
-			//Input Validation (ensure input is integer)
-			while (!(checkIntInput(userInput))) {
-				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		if (TutorID[0] == 'T' || TutorID[0] == 't') {
+			do {
+				Tutor* target = BinarySearchAlgorithmForTutor(TutorHead, TutorID);
+				DisplayOneTutorForAdmin(target);
+				//Select choice to modify which specific information
+				ValidChoice = 0;
 				cout << "Enter '1' to modify tutor's phone" << endl;
 				cout << "Enter '2' to modify tutor's address" << endl;
 				cout << "Enter '3' to return to Tutor Record Page" << endl;
 				cout << "Enter your choice here: ";
-
-				//Clear previous input
-				cin.clear();
-				//Discard previous input
 				userInput.clear();
 				getline(cin, userInput);
-			}
-			option = stoi(userInput);
+				//Input Validation (ensure input is integer)
+				while (!(checkIntInput(userInput))) {
+					cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
+					cout << "Enter '1' to modify tutor's phone" << endl;
+					cout << "Enter '2' to modify tutor's address" << endl;
+					cout << "Enter '3' to return to Tutor Record Page" << endl;
+					cout << "Enter your choice here: ";
 
-			switch (option) {
-			case 1: //Modify Phone Number
-				ValidChoice = 1;
-				cout << "Enter new phone number: ";
-				cin.ignore();
-				getline(cin, modification);
-				target->PhoneNumber = modification;
-				WriteTutorFile(TutorHead); //Modify and update tutor record in text file
-				cout << TutorID << "'s phone number is updated." << endl;
-				cout << "Enter 'Y' to continue the modification for Tutor " << TutorID << " or Press any key to return to Tutor Records Page : ";
-				getline(cin, repeat);
-				if (repeat == "Y" || repeat == "y") {
-					ValidChoice = 0;
+					//Clear previous input
+					cin.clear();
+					//Discard previous input
+					userInput.clear();
+					getline(cin, userInput);
 				}
-				else {
-					cout << endl;
-					TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
-				}
-				break;
-			case 2: //Modify Address
-				ValidChoice = 1;
-				cout << "Enter new address: ";
-				cin.ignore();
-				getline(cin, modification);
-				target->Address = modification;
-				WriteTutorFile(TutorHead); //Modify and update tutor record in text file
-				cout << TutorID << "'s address is updated." << endl;
-				cout << "Enter 'Y' to continue the modification for Tutor " << TutorID << " or Press any key to return to Tutor Records Page : ";
-				getline(cin, repeat);
-				if (repeat == "Y" || repeat == "y") {
-					ValidChoice = 0;
-				}
-				else {
-					cout << endl;
-					TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
-				}
-				break;
-			case 3: //Return to Admin Sub Menu
-				ValidChoice = 1;
-				TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
-				break;
-			default:
-				ValidChoice = 0;
-				cout << "Invalid number entered." << endl;
-				cout << "Please try again." << endl << endl;
-			}
-		} while (ValidChoice == 0);
+				option = stoi(userInput);
 
+				switch (option) {
+				case 1: //Modify Phone Number
+					ValidChoice = 1;
+					cout << "Enter new phone number: ";
+					getline(cin, modification);
+					while (!(checkIntInput(modification))) {
+						cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;;
+						cout << "Enter new phone number: ";
+						//Clear previous input
+						cin.clear();
+						//Discard previous input
+						modification.clear();
+						getline(cin, modification);
+					}
+					target->PhoneNumber = modification;
+					WriteTutorFile(TutorHead); //Modify and update tutor record in text file
+					cout << TutorID << "'s phone number is updated." << endl;
+					cout << "Enter 'Y' to continue the modification for Tutor " << TutorID << " or Press any key to return to Tutor Records Page : ";
+					getline(cin, repeat);
+					if (repeat == "Y" || repeat == "y") {
+						ValidChoice = 0;
+					}
+					else {
+						cout << endl;
+						TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
+					}
+					break;
+				case 2: //Modify Address
+					ValidChoice = 1;
+					cout << "Enter new address: ";
+					getline(cin, modification);
+					modification = trim(modification);
+					//Validate input
+					while (modification.empty()) {
+						cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
+						cout << "Enter new address: ";
+
+						//Clear previous input
+						cin.clear();
+						//Discard previous input
+						modification.clear();
+						getline(cin, modification);
+						modification = trim(modification);
+					}
+					target->Address = modification;
+					WriteTutorFile(TutorHead); //Modify and update tutor record in text file
+					cout << TutorID << "'s address is updated." << endl;
+					cout << "Enter 'Y' to continue the modification for Tutor " << TutorID << " or Press any key to return to Tutor Records Page : ";
+					getline(cin, repeat);
+					if (repeat == "Y" || repeat == "y") {
+						ValidChoice = 0;
+					}
+					else {
+						cout << endl;
+						TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
+					}
+					break;
+				case 3: //Return to Admin Sub Menu
+					ValidChoice = 1;
+					TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
+					break;
+				default:
+					ValidChoice = 0;
+					cout << "Invalid number entered." << endl;
+					cout << "Please try again." << endl << endl;
+				}
+			} while (ValidChoice == 0);
+		}
+		//Invalid Tutor ID at the first character
+		else {
+			cout << "Tutor ID " << TutorID << " does not exist in Tutor.txt." << endl;
+			cout << "Please try again." << endl << endl;
+			ModifyTutor(TutorHead, StudentHead, AdminHead);
+		}
 	}
 }
 
@@ -384,9 +415,10 @@ void TerminateTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	cout << "\n==========Terminate a Tutor==========" << endl;
 	cout << "Enter the tutor ID to terminate: ";
 	getline(cin, TutorID);
+	TutorID = trim(TutorID);
 	//Input validation
 	while (TutorID.empty()) {
-		cout << "********INVALID INPUT********\nPlease enter the correct tutor ID format.\n" << endl;
+		cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 		cout << "Enter the tutor ID to terminate: ";
 
 		//Clear previous input
@@ -394,132 +426,141 @@ void TerminateTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 		//Discard previous input
 		TutorID.clear();
 		getline(cin, TutorID);
+		TutorID = trim(TutorID);
 	}
 	cout << endl;
 	cout << "Tutor's Record: " << endl;
+	Tutor* found = BinarySearchAlgorithmForTutor(TutorHead, TutorID);
 
-	if (BinarySearchAlgorithmForTutor(TutorHead, TutorID) == NULL) {
+	if (found == NULL) {
 		cout << "Tutor ID " << TutorID << " does not exist in Tutor.txt." << endl;
 		cout << "Please try again." << endl << endl;
 		TerminateTutor(TutorHead,StudentHead,AdminHead);
 	}
 	else {
-		Tutor* target = BinarySearchAlgorithmForTutor(TutorHead, TutorID);
-		DisplayOneTutorForAdmin(target);
+		if (TutorID[0] == 'T' || TutorID[0] == 't') {
+			Tutor* target = BinarySearchAlgorithmForTutor(TutorHead, TutorID);
+			DisplayOneTutorForAdmin(target);
 
-		do {
-			ValidChoice = 0;
-			cout << "Enter '1' to continue or '2' to return to Tutor Records Page: ";
-			userInput.clear();
-			getline(cin, userInput);
-			//Input Validation (ensure input is integer)
-			while (!(checkIntInput(userInput))) {
-				cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+			do {
+				ValidChoice = 0;
 				cout << "Enter '1' to continue or '2' to return to Tutor Records Page: ";
-
-				//Clear previous input
-				cin.clear();
-				//Discard previous input
 				userInput.clear();
 				getline(cin, userInput);
-			}
-			option = stoi(userInput);
-			switch (option) {
-			case 1: //User confirm termination date
-				ValidChoice = 1;
-				do {
-					//Get Termination  Date - Year
-					cout << "Enter year of termination date for tutor (format - YYYY): "; 
-					cin.ignore();
-					getline(cin, yearString);
-					while (!checkIntInput(yearString)) {
-						cout << "\nWrong Year Format Input! Please try again with integers only.\n";
+				//Input Validation (ensure input is integer)
+				while (!(checkIntInput(userInput))) {
+					cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
+					cout << "Enter '1' to continue or '2' to return to Tutor Records Page: ";
+
+					//Clear previous input
+					cin.clear();
+					//Discard previous input
+					userInput.clear();
+					getline(cin, userInput);
+				}
+				option = stoi(userInput);
+				switch (option) {
+				case 1: //User confirm termination date
+					ValidChoice = 1;
+					do {
+						//Get Termination  Date - Year
 						cout << "Enter year of termination date for tutor (format - YYYY): ";
-						//Discard previous input
-						yearString.clear();
-						//Clear previous input
-						cin.clear();
 						getline(cin, yearString);
-					}
-					
-					//Get Termination  Date - Month
-					cout << "Enter month of termination date for tutor (format - MM): "; 
-					getline(cin, monthString);
-					while (!checkIntInput(monthString)) {
-						cout << "\nWrong Month Format Input! Please try again with integers only.\n";
+						while (!checkIntInput(yearString)) {
+							cout << "Invalid year input entered." << endl << "Please try again." << endl << endl << endl;
+							cout << "Enter YEAR of termination date for tutor (format - YYYY): ";
+							//Discard previous input
+							yearString.clear();
+							//Clear previous input
+							cin.clear();
+							getline(cin, yearString);
+						}
+
+						//Get Termination  Date - Month
 						cout << "Enter month of termination date for tutor (format - MM): ";
-						//Clear previous input
-						cin.clear();
-						//Discard previous input
-						monthString.clear();
 						getline(cin, monthString);
-					}
+						while (!checkIntInput(monthString)) {
+							cout << "Invalid month input entered." << endl << "Please try again." << endl << endl << endl;
+							cout << "Enter MONTH of termination date for tutor (format - MM): ";
+							//Clear previous input
+							cin.clear();
+							//Discard previous input
+							monthString.clear();
+							getline(cin, monthString);
+						}
 
-					//Get Termination  Date - Day
-					cout << "Enter day of termination date for tutor (format - DD): "; 
-					getline(cin, dayString);
-					while (!checkIntInput(dayString)) {
-						cout << "\nWrong Day Format Input! Please try again with integers only.\n";
+						//Get Termination  Date - Day
 						cout << "Enter day of termination date for tutor (format - DD): ";
-						//Clear previous input
-						cin.clear();
-						//Discard previous input
-						dayString.clear();
 						getline(cin, dayString);
-					}
+						while (!checkIntInput(dayString)) {
+							cout << "Invalid day input entered." << endl << "Please try again." << endl << endl << endl;
+							cout << "Enter DAY of termination date for tutor (format - DD): ";
+							//Clear previous input
+							cin.clear();
+							//Discard previous input
+							dayString.clear();
+							getline(cin, dayString);
+						}
 
-					year = stoi(yearString);
-					month = stoi(monthString);
-					day = stoi(dayString);
-					//Invalid Date
-					if (!(isValidDate(day, month, year))) {
-						cout << "\nInvalid Date Input! Please try again with a valid date.\n";
-						valid = false;
-						
-					}
-					//Valid Date
-					else if (isValidDate(day, month, year)){
-						valid = true;
-						//ensure double digit format for Month and Day
-						if (day < 10) {
-							dayString = '0' + to_string(day);
+						year = stoi(yearString);
+						month = stoi(monthString);
+						day = stoi(dayString);
+						//Invalid Date
+						if (!(isValidDate(day, month, year))) {
+							cout << "Invalid date input entered." << endl << "Please try again." << endl << endl << endl;
+							valid = false;
+
+						}
+						//Valid Date
+						else if (isValidDate(day, month, year)) {
+							valid = true;
+							//ensure double digit format for Month and Day
+							if (day < 10) {
+								dayString = '0' + to_string(day);
+							}
+							else {
+								dayString = to_string(day);
+							}
+
+							if (month < 10) {
+								monthString = '0' + to_string(month);
+							}
+							else {
+								monthString = to_string(month);
+							}
+
+							DateTerminate = to_string(year) + '-' + monthString + '-' + dayString;
 						}
 						else {
-							dayString = to_string(day);
+							cout << "Invalid Date Input! Please try again with a valid date.\n ";
+							valid = false;
 						}
+					} while (!valid);
 
-						if (month < 10) {
-							monthString = '0' + to_string(month);
-						}
-						else {
-							monthString = to_string(month);
-						}
+					target->DateTerminate = DateTerminate;
 
-						DateTerminate = to_string(year) + '-' + monthString + '-' + dayString;
-					}
-					else {
-						cout << "Invalid Date Input! Please try again with a valid date.\n ";
-						valid = false;
-					}
-				} while (!valid);
-				
-				target->DateTerminate = DateTerminate;
-				
-				cout << TutorID << "'s date of termination is updated." << endl;
-				DeleteTutor(&TutorHead);
-				TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
-				break;
-			case 2: //Return to Admin sub menu
-				ValidChoice = 1;
-				TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
-				break;
-			default: //Entered invalid input
-				ValidChoice = 0;
-				cout << "Invalid number entered." << endl;
-				cout << "Please try again." << endl;
-			}
-		} while (ValidChoice == 0);
-		
+					cout << TutorID << "'s date of termination is updated." << endl;
+					
+					DeleteTutor(&TutorHead);
+					WriteTutorFile(TutorHead);
+					TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
+					break;
+				case 2: //Return to Admin sub menu
+					ValidChoice = 1;
+					TutorRecordsForAdminSubMenu(TutorHead, StudentHead, AdminHead);
+					break;
+				default: //Entered invalid input
+					ValidChoice = 0;
+					cout << "Invalid number entered." << endl;
+					cout << "Please try again." << endl;
+				}
+			} while (ValidChoice == 0);
+		}
+		else {
+		cout << "Tutor ID " << TutorID << " does not exist in Tutor.txt." << endl;
+		cout << "Please try again." << endl << endl;
+		TerminateTutor(TutorHead, StudentHead, AdminHead);
+		}
 	}
 }
 
@@ -533,7 +574,7 @@ void SearchStudentToModify(Tutor* TutorHead, Student* StudentHead, Admin* AdminH
 		cout << "Enter the student ID to modify: ";
 		getline(cin, StudentID);
 		while (StudentID.empty()) {
-			cout << "********INVALID INPUT********\nPlease enter the correct tutor ID format.\n" << endl;
+			cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 			cout << "Enter the student ID to modify: ";
 
 			//Clear previous input
@@ -548,18 +589,26 @@ void SearchStudentToModify(Tutor* TutorHead, Student* StudentHead, Admin* AdminH
 		cout << endl;
 		cout << "Student's Record: " << endl;
 
+		Student* found = BinarySearchAlgorithmForStudent(StudentHead, StudentID);
 		//Invalid ID or No search results
-		if (BinarySearchAlgorithmForStudent(StudentHead, StudentID) == NULL) {
-			cout << "Tutor ID " << StudentID << " does not exist in Tutor.txt." << endl;
+		if (found == NULL) {
+			cout << "Student ID " << StudentID << " does not exist in Student.txt." << endl;
 			cout << "Please try again." << endl << endl;
 			repeat = 1;
 		}
 		//Student ID found and calls modify function
 		else {
-			Student* target = BinarySearchAlgorithmForStudent(StudentHead, StudentID);
-			repeat = 0;
-			DisplayOneStudent(target);
-			ModifyStudentPage(TutorHead, StudentHead, AdminHead, target, StudentID);
+			if (StudentID[0] == 'S' || StudentID[0] == 's') {
+				Student* target = BinarySearchAlgorithmForStudent(StudentHead, StudentID);
+				repeat = 0;
+				DisplayOneStudent(target);
+				ModifyStudentPage(TutorHead, StudentHead, AdminHead, target, StudentID);
+			}
+			else {
+				cout << "Student ID " << StudentID << " does not exist in Student.txt." << endl;
+				cout << "Please try again." << endl << endl;
+				repeat = 1;
+			}
 		}
 	} while (repeat == 1);
 }
@@ -567,7 +616,7 @@ void SearchStudentToModify(Tutor* TutorHead, Student* StudentHead, Admin* AdminH
 //Modify Student Record
 void ModifyStudentPage(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead, Student* target, string id) {
 	int option, ValidChoice;
-	char REPEAT;
+	string REPEAT, userInput;
 	string modification;
 
 	do {
@@ -578,8 +627,10 @@ void ModifyStudentPage(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead,
 		cout << "3. To add a new tutor for the student" << endl << "4. To remove a tutor for the student" << endl;
 		cout << "5. Exit to Student Records Page" << endl;
 		cout << "Enter your choice here: ";
-		while (!(cin >> option)) {
-			cout << "********INVALID INPUT********\nPlease try again.\n" << endl;
+		getline(cin, userInput);
+		userInput = trim(userInput);
+		while (!(checkIntInput(userInput))) {
+			cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
 			cout << "\n==========Modify Student " << id << "'s Record==========" << endl;
 			cout << "1. To modify student's phone" << endl << "2. To modify student's center" << endl;
 			cout << "3. To add a new tutor for the student" << endl << "4. To remove a tutor for the student" << endl;
@@ -588,20 +639,33 @@ void ModifyStudentPage(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead,
 			//Clear previous input
 			cin.clear();
 			//Discard previous input
-			cin.ignore(100, '\n');
+			userInput.clear();
+			getline(cin, userInput);
+			userInput = trim(userInput);
 		}
-
+		option = stoi(userInput);
 		switch (option) {
 		case 1://Modify Phone Number
 			cout << "Enter new phone number for Student " << id << ": ";
-			cin.ignore();
 			getline(cin, modification);
+			//Validate input
+			while (!(checkIntInput(modification))) {
+				cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;;
+				cout << "Enter new phone number for Student " << id << ": ";
+				//Clear previous input
+				cin.clear();
+				//Discard previous input
+				modification.clear();
+				getline(cin, modification);
+			}
+			
 			target->PhoneNumber = modification;
 			WriteStudentFile(StudentHead); //Modify and update student record in text file
 			cout << "Student " << id << "'s new phone number is updated." << endl;
 			cout << "Enter 'Y' to continue the modification for Student " << id << " or Press any key to return to Student Records Page : ";
-			cin >> REPEAT;
-			if (REPEAT == 'Y' || REPEAT == 'y') {
+			getline(cin, REPEAT);
+			REPEAT = trim(REPEAT);
+			if (REPEAT == "Y" || REPEAT == "y") {
 				ValidChoice = 0;
 			}
 			else {
@@ -639,8 +703,9 @@ void ModifyStudentPage(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead,
 			WriteStudentFile(StudentHead); //Modify and update student record in text file
 			cout << id << "'s new center code is updated." << endl;
 			cout << "Enter 'Y' to continue the modification for Student " << id << " or Press any key to return to Student Records Page : ";
-			cin >> REPEAT;
-			if (REPEAT == 'Y' || REPEAT == 'y') {
+			getline(cin, REPEAT);
+			REPEAT = trim(REPEAT);
+			if (REPEAT == "Y" || REPEAT == "y") {
 				ValidChoice = 0;
 			}
 			else {
@@ -683,38 +748,83 @@ void ModifyStudentPage(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead,
 
 //Allow Admin to Add New Tutor for Student
 void AddATutorForStudent(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead, Student* target, string id) {
-	int ValidTutor;
+	int repeat;
 	string TutorID;
+	bool ValidTutor, NoRepeatTutor;
 
 	do {
-		ValidTutor = 0;
 		cout << "Enter the tutor ID to add for Student " << id << " or Enter 'Y' to return to previous page: ";
-		cin.ignore();
 		getline(cin, TutorID);
+		TutorID = trim(TutorID);
+		while (TutorID.empty()) {
+			cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
+			cout << "Enter the tutor ID to add for Student " << id << " or Enter 'Y' to return to previous page: ";
+
+			//Clear previous input
+			cin.clear();
+			//Discard previous input
+			TutorID.clear();
+			getline(cin, TutorID);
+			TutorID = trim(TutorID);
+		}
+		
 
 		if (TutorID == "Y" || TutorID == "y") {
-			ModifyStudentPage(TutorHead, StudentHead, AdminHead,target, id);
+			ModifyStudentPage(TutorHead, StudentHead, AdminHead, target, id);
 			return;
 		}
 
-		while (TutorHead != NULL) {
-			if (TutorHead->TutorID == TutorID) {
-				ValidTutor = 1;
-				target->TutorID[target->NoOfTutors] = TutorID;
-				cout << "Tutor " << TutorID << " is added for Student " << id << "." << endl << endl;
-				AddATutorForStudent(TutorHead, StudentHead, AdminHead, target, id);
-				break;
-			}
-
-			TutorHead = TutorHead->next;
+		ValidTutor = AValidTutorForStudents(TutorHead, TutorID);
+		NoRepeatTutor = NoRepeatTutorForOneStudent(TutorHead, target, TutorID);
+		if (ValidTutor && NoRepeatTutor && target->NoOfTutors < 5) {
+			target->TutorID[target->NoOfTutors] = TutorID;
+			target->NoOfTutors = target->NoOfTutors + 1;
+			cout << "Tutor " << TutorID << " is added for Student " << id << "." << endl << endl;
+			repeat = 1;
 		}
-
-		if (ValidTutor == 0) {
+		else if (!ValidTutor) {
 			cout << "Invalid tutor ID entered." << endl << "Please try again." << endl << endl;
+			repeat = 1;
+		}
+		else if (!NoRepeatTutor) {
+			cout << "The tutor with ID " << TutorID << " already exists for Student " << id << "." << endl;
+			cout << "Please enter other tutor ID." << endl << endl;
+			repeat = 1;
+		}
+		else {
+			cout << "The number of tutors for Student " << id << " is maximized." << endl << "Please remove a tutor before adding." << endl << endl;
+			repeat = 0;
+		}
+	} while (repeat == 1);
+	ModifyStudentPage(TutorHead, StudentHead, AdminHead, target, id);
+}
+
+bool AValidTutorForStudents(Tutor* TutorHead, string TutorID) {
+	bool ValidTutor = false;
+
+	while (TutorHead != NULL) {
+		if (TutorHead->TutorID == TutorID) {
+			ValidTutor = true;
+			return ValidTutor;
 		}
 
-	} while (ValidTutor == 0);
+		TutorHead = TutorHead->next;
+	}
 
+	return ValidTutor;
+}
+
+bool NoRepeatTutorForOneStudent(Tutor* TutorHead, Student* wantedstudent, string TutorID) {
+	bool NoRepeat = true;
+
+	for (int i = 0; i < wantedstudent->NoOfTutors; i++) {
+		if (wantedstudent->TutorID[i] == TutorID) {
+			NoRepeat = false;
+			return NoRepeat;
+		}
+	}
+
+	return NoRepeat;
 }
 
 //Allow Admin to remove tutor for student
@@ -725,8 +835,20 @@ void RemoveATutorForStudent(Tutor* TutorHead, Student* StudentHead, Admin* Admin
 	do {
 		found = 0;
 		cout << "Enter the tutor ID to remove for Student " << id << " or Enter 'Y' to return to previous page: ";
-		cin.ignore();
+		
 		getline(cin, TutorID);
+		TutorID = trim(TutorID);
+		while (TutorID.empty()) {
+			cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;
+			cout << "Enter the tutor ID to remove for Student " << id << " or Enter 'Y' to return to previous page: ";
+
+			//Clear previous input
+			cin.clear();
+			//Discard previous input
+			TutorID.clear();
+			getline(cin, TutorID);
+			TutorID = trim(TutorID);
+		}
 
 		if (TutorID == "Y" || TutorID == "y") {
 			ModifyStudentPage(TutorHead, StudentHead, AdminHead, target, id);
