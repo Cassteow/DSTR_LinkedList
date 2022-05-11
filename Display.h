@@ -3,6 +3,8 @@
 #include "Struct.h"
 
 using namespace std;
+
+//Function Prototype Declaration
 void DisplayAllTutorsForAdmin(Tutor*);
 void DisplayAllStudents(Student*);
 void DisplayAllAdmins(Admin*);
@@ -24,6 +26,7 @@ void TutorRecordsForAdminSubMenu(Tutor*, Student*, Admin*);
 //Function Definition of the function prototype below is included at ExtraFunction.h
 bool checkIntInput(string);
 
+//Function to Display all tutor records for admin users
 void DisplayAllTutorsForAdmin(Tutor* head) {
 	int count = 1;
 	//Display Header
@@ -45,6 +48,7 @@ void DisplayAllTutorsForAdmin(Tutor* head) {
 	}
 }
 
+//Function to Display all student records for admin users
 void DisplayAllStudents(Student* head) {
 	while (head != NULL) {
 		//Display Header
@@ -56,6 +60,7 @@ void DisplayAllStudents(Student* head) {
 	}
 }
 
+
 void DisplayAllAdmins(Admin* head) {
 	while (head != NULL) {
 		cout << head->AdminID << ", " << head->Password << endl;
@@ -63,6 +68,7 @@ void DisplayAllAdmins(Admin* head) {
 	}
 }
 
+//Function to Display all tutor records in the same center for student users
 void DisplayTutorsForStudent(Tutor* head, string centercode) {
 	//Display Header
 	cout << "No.--ID--Name---Hourly Rate---Center Code--Center Name--Subject Code--Subject Name--Ratings" << endl;
@@ -75,6 +81,7 @@ void DisplayTutorsForStudent(Tutor* head, string centercode) {
 	}
 }
 
+//Function to Display one tutor record for student users
 void DisplayOneTutorForStudent(Tutor* one) {
 
 	cout << "Tutor ID: " << one->TutorID << endl;
@@ -88,6 +95,7 @@ void DisplayOneTutorForStudent(Tutor* one) {
 	cout << endl;
 }
 
+//Function to Display one tutor record for admin users
 void DisplayOneTutorForAdmin(Tutor* one) {
 	//Display Date of Termination, if Date is 1900-01-01, Date of Termination is unavailable
 	string checkDateTermination;
@@ -113,22 +121,23 @@ void DisplayOneTutorForAdmin(Tutor* one) {
 	cout << endl;
 }
 
-
-//Function to Display Sorted Linked List (ID)
+//Function to Display Tutor Records in Sorted Linked List (ID)
 void DisplaySortedID(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	MergeSortForID(&TutorHead);
 	Tutor* temp = TutorHead;
 	cout << "\n";
 	DisplayIndividualTutor(temp, TutorHead, StudentHead, AdminHead);
 }
-//Function to Display Sorted Linked List (Rating)
+
+//Function to Display Tutor Records in Sorted Linked List (Rating)
 void DisplaySortedRating(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	MergeSortForRating(&TutorHead);
 	Tutor* temp = TutorHead;	
 	cout << "\n";
 	DisplayIndividualTutor(temp, TutorHead, StudentHead, AdminHead);
 }
-//Function to Display Sorted Linked List (Hourly Rate)
+
+//Function to Display Tutor Records in Sorted Linked List (Hourly Rate)
 void DisplaySortedHourlyRate(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	MergeSortForHourlyRate(&TutorHead);
 	Tutor* temp = TutorHead;
@@ -195,4 +204,3 @@ void DisplayIndividualTutor(Tutor* DisplayHead, Tutor* TutorHead, Student* Stude
 	} while (valid == 0);
 	
 }
-

@@ -4,19 +4,22 @@
 
 using namespace std;
 
+//Function Prototype Declaration
+void SplitList(Tutor*);
+
 struct Tutor* SortedMergeID(Tutor*, Tutor*);
 struct Tutor* SortedMergeRating(Tutor*, Tutor*);
 struct Tutor* SortedMergeHourlyRate(Tutor*, Tutor*);
-struct Student* SortedMergeStudentID(Student*, Student*);
-
-void SplitList(Tutor*);
-void SplitListStudent(Student*);
 
 void MergeSortForID(Tutor**);
 void MergeSortForRating(Tutor**);
 void MergeSortForHourlyRate(Tutor**);
+
+void SplitListStudent(Student*);
+struct Student* SortedMergeStudentID(Student*, Student*);
 void MergeSortForStudentID(Student**);
 
+//the function definition is at SubMenu.h
 void TutorRecordsForAdminSubMenu(Tutor*, Student*, Admin*);
 
 /* Split the nodes of the given list into front and back halves,
@@ -41,21 +44,36 @@ void SplitList(Tutor* head, Tutor** a, Tutor** b) {
 	slow->next = NULL;
 }
 
-//Split a list into two
-void SplitListStudent(Student* head, Student** a, Student** b) {
-	Student* fast = head->next;
-	Student* slow = head;
+//Function to merge 2 sorted linked list (ID)
+struct Tutor* SortedMergeID(Tutor* first, Tutor* second) {
 
-	while (fast != NULL) {
-		fast = fast->next;
-		if (fast != NULL) {
-			slow = slow->next;
-			fast = fast->next;
-		}
-
+	//If first linked list is empty, return second
+	if (!first) {
+		return second;
 	}
-	*b = slow->next;
-	slow->next = NULL;
+	//If second linked list is empty, return first
+	if (!second) {
+		return first;
+	}
+
+	//Convert ID digit into Integer to compare
+	int intID1 = RemoveTheFirstChar(first->TutorID);
+	int intID2 = RemoveTheFirstChar(second->TutorID);
+	//Select smaller value
+	//pick either first or second and recur
+	if (intID1 <= intID2) {
+		first->next = SortedMergeID(first->next, second);
+		first->next->prev = first;
+		first->prev = NULL;
+		return first;
+	}
+	else
+	{
+		second->next = SortedMergeID(first, second->next);
+		second->next->prev = second;
+		second->prev = NULL;
+		return second;
+	}
 }
 
 //Function to merge 2 sorted linked list (Rating)
@@ -116,54 +134,6 @@ struct Tutor* SortedMergeHourlyRate(Tutor* first, Tutor* second) {
 	}
 }
 
-//Function to merge 2 sorted linked list (ID)
-struct Tutor* SortedMergeID(Tutor* first, Tutor* second) {
-
-	//If first linked list is empty, return second
-	if (!first) {
-		return second;
-	}
-	//If second linked list is empty, return first
-	if (!second) {
-		return first;
-	}
-
-	//Convert ID digit into Integer to compare
-	int intID1 = RemoveTheFirstChar(first->TutorID);
-	int intID2 = RemoveTheFirstChar(second->TutorID);
-	//Select smaller value
-	//pick either first or second and recur
-	if (intID1 <= intID2) {
-		first->next = SortedMergeID(first->next, second);
-		first->next->prev = first;
-		first->prev = NULL;
-		return first;
-	}
-	else
-	{
-		second->next = SortedMergeID(first, second->next);
-		second->next->prev = second;
-		second->prev = NULL;
-		return second;
-	}
-}
-//Function to apply merge sort to a linked list based on Hourly Rate
-void MergeSortForHourlyRate(Tutor** head) {
-
-	if (*head == NULL || (*head)->next == NULL) {
-		return;
-	}
-	struct Tutor* first = *head;
-	struct Tutor* second = NULL;
-	SplitList(*head, &first, &second);
-
-	//Recur left and right halves
-	MergeSortForHourlyRate(&first);
-	MergeSortForHourlyRate(&second);
-	//Merge two sorted halves
-	*head = SortedMergeHourlyRate(first, second);
-}
-
 //Function to apply merge sort to a linked list based on Tutor ID
 void MergeSortForID(Tutor** head) {
 
@@ -196,6 +166,40 @@ void MergeSortForRating(Tutor** head) {
 	MergeSortForRating(&second);
 	//Merge two sorted halves
 	*head = SortedMergeRating(first, second);
+}
+
+//Function to apply merge sort to a linked list based on Hourly Rate
+void MergeSortForHourlyRate(Tutor** head) {
+
+	if (*head == NULL || (*head)->next == NULL) {
+		return;
+	}
+	struct Tutor* first = *head;
+	struct Tutor* second = NULL;
+	SplitList(*head, &first, &second);
+
+	//Recur left and right halves
+	MergeSortForHourlyRate(&first);
+	MergeSortForHourlyRate(&second);
+	//Merge two sorted halves
+	*head = SortedMergeHourlyRate(first, second);
+}
+
+//Split a list into two
+void SplitListStudent(Student* head, Student** a, Student** b) {
+	Student* fast = head->next;
+	Student* slow = head;
+
+	while (fast != NULL) {
+		fast = fast->next;
+		if (fast != NULL) {
+			slow = slow->next;
+			fast = fast->next;
+		}
+
+	}
+	*b = slow->next;
+	slow->next = NULL;
 }
 
 //Function to merge 2 sorted linked list (for Student ID)

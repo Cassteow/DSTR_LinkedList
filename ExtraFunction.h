@@ -5,21 +5,25 @@
 #include <time.h>
 
 using namespace std;
+
+//Function Prototype Declaration
 string ltrim(string&);
 string rtrim(string&);
 string trim(string&);
 int RemoveTheFirstChar(string);
 bool checkIntInput(string);
 bool checkStringInput(string);
+bool ValidPhoneNumber(string);
 
 struct tm GetCurrentTime();
 string CorrectWeekDayTime(int);
 string CorrectMonthTime(int);
 
-string GetUniqueTutorID(Tutor*);
 bool UniqueTutorIDChecker(Tutor*, string);
-string GetUniqueStudentID(Student*);
+string GetUniqueTutorID(Tutor*);
 bool UniqueStudentIDChecker(Student*, string);
+string GetUniqueStudentID(Student*);
+
 
 bool isLeapYear(int);
 bool isValidDate(int, int, int);
@@ -27,6 +31,7 @@ bool checkFutureDate(int, int, int);
 int countLeapYear(int, int, int);
 int getDifferenceDate(int, int, int, int, int, int);
 
+//Declare constant variable to check year
 const int MaxValidYear = 9999;
 const int MinValidYear = 1800;
 
@@ -65,6 +70,7 @@ int RemoveTheFirstChar(string word) {
 		return 0;
 	}
 }
+
 //Check whether input is integer and is not null, if yes, returns true
 bool checkIntInput(string input) {
 	input = trim(input);
@@ -100,6 +106,25 @@ bool checkStringInput(string input) {
 		}
 	}
 	return goodInput;
+}
+
+//Function to check whether input is a valid Phone Number format
+bool ValidPhoneNumber(string PhoneNumber) {
+	bool ValidPhoneNumber = true;
+	//more than 11 digit, less than 6 digit
+	if (PhoneNumber.length() > 11 || PhoneNumber.length() < 6) {
+		ValidPhoneNumber = false;
+	}
+	//not integer
+	if (!checkIntInput(PhoneNumber)) {
+		ValidPhoneNumber = false;
+	}
+	//not start with 0
+	if (PhoneNumber.at(0) != '0') {
+		ValidPhoneNumber = false;
+	}
+
+	return ValidPhoneNumber;
 }
 
 //To get the current time
@@ -301,7 +326,7 @@ bool checkFutureDate(int d, int m, int y) {
 	}
 }
 
-//
+//Function to count number of leap year passed of the given date
 int countLeapYear(int d, int m, int y)
 {
 	int years = y;

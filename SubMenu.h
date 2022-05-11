@@ -6,6 +6,7 @@
 
 using namespace std;
 
+//Function Prototype Declaration
 void TutorRecordsForAdminSubMenu(Tutor*, Student*, Admin*);
 void StudentRecordsForAdminSubMenu(Tutor*, Student*, Admin*);
 void ReportForAdminSubMenu(Tutor*, Student*, Admin*);
@@ -33,7 +34,7 @@ void DeleteTutor(Tutor**);
 //the function definition is at Sort.h
 void MergeSortForStudentID(Student**);
 
-//TUTOR RECORDS FOR ADMINS
+//TUTOR RECORDS MENU FOR ADMINS
 void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	string userInput;
 	int option;
@@ -159,6 +160,7 @@ void TutorRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* 
 
 }
 
+//STUDENT RECORDS MENU FOR ADMINS
 void StudentRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	string userInput;
 	int option;
@@ -200,6 +202,7 @@ void StudentRecordsForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin
 	}
 }
 
+//REPORT MENU FOR ADMINS
 void ReportForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	string option;
 	cout << "\n====================Report====================" << endl;
@@ -216,6 +219,7 @@ void ReportForAdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminH
 		AdminSubMenu(TutorHead, StudentHead, AdminHead);
 }
 
+//MAIN PAGE FOR ADMINS
 void AdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	int submenu;
 	string userInput;
@@ -269,6 +273,7 @@ void AdminSubMenu(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	}
 }
 
+//MAIN PAGE FOR STUDENTS
 void StudentSubMenu(Tutor* TutorHead, Student* StudentHead, Student* wantedstudent) {
 	int submenu;
 	string repeat;
@@ -347,6 +352,7 @@ void StudentSubMenu(Tutor* TutorHead, Student* StudentHead, Student* wantedstude
 	}
 }
 
+//SEARCHING PAGE (TUTOR RECORDS) FOR ADMINS
 void SearchTutorsPage(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	int search;
 	string repeat;

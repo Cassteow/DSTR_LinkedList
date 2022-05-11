@@ -8,6 +8,7 @@
 
 using namespace std;
 
+//Function Prototype Declaration
 void InsertAtBeginningForReadTutorFile(Tutor**, string, string, string, string, int, string, string, string, string, string, string, int, int, int);
 struct Tutor* ReadTutorFile();
 void InsertAtEndForReadStudentFile(Student**, string, string, string, string, string, string, string, string, string, string, string, int);
@@ -15,7 +16,7 @@ struct Student* ReadStudentFile();
 void InsertAtEndForReadAdminFile(Admin**, string, string);
 struct Admin* ReadAdminFile();
 
-
+//Function to insert new node of tutor record to the beginning of the linked list
 void InsertAtBeginningForReadTutorFile(Tutor** TutorHead_ref, string id, string name, string join, string terminate, int hourly, string phone, string address, string centercode, string centername, string subcode, string subname, int totalratings, int noofratings, int averagerating) {
 	Tutor* ptr = *TutorHead_ref;
 	//Allocate new node
@@ -52,8 +53,7 @@ void InsertAtBeginningForReadTutorFile(Tutor** TutorHead_ref, string id, string 
 	
 }
 
-
-
+//Read Tutor.txt file into linked list
 struct Tutor* ReadTutorFile() {
 	ifstream read("Tutor.txt");
 	Tutor* FullRecord = NULL;//this is very important, cannot be 'Tutor* FullRecord = new Tutor;'
@@ -89,6 +89,7 @@ struct Tutor* ReadTutorFile() {
 	return FullRecord;
 }
 
+//Function to insert new node of student record to the end of the linked list
 void InsertAtEndForReadStudentFile(Student** head_ref, string id, string name, string phone, string password, string centercode, string centername, string tutor1, string tutor2, string tutor3, string tutor4, string tutor5, int nooftutors) {
 	Student* NewNode = new Student();
 	Student* ptr = new Student();
@@ -123,6 +124,7 @@ void InsertAtEndForReadStudentFile(Student** head_ref, string id, string name, s
 	}
 }
 
+//Read Student.txt file into linked list
 struct Student* ReadStudentFile() {
 	ifstream read("Student.txt");
 	Student* FullRecord = NULL;//this is very important, cannot be 'Student* FullRecord = new Student;'
@@ -156,6 +158,7 @@ struct Student* ReadStudentFile() {
 	return FullRecord;
 }
 
+//Function to insert new node of admin record to the end of the linked list
 void InsertAtEndForReadAdminFile(Admin** head_ref, string id, string password) {
 	Admin* NewNode = new Admin();
 	Admin* ptr = new Admin();
@@ -180,6 +183,7 @@ void InsertAtEndForReadAdminFile(Admin** head_ref, string id, string password) {
 	}
 }
 
+//Read Admin.txt file into linked list
 struct Admin* ReadAdminFile() {
 	ifstream read("Admin.txt");
 	Admin* FullRecord = NULL;//this is very important, cannot be 'Student* FullRecord = new Student;'

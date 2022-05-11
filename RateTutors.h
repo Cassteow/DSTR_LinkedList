@@ -2,8 +2,10 @@
 
 using namespace std;
 
+//Function Prototype Declaration
 void DisplayTutorsAndRate(Tutor*, Student*, Student*);
-void StudentSubMenu(Tutor*, Student*, Student*);//the function definition is at SubMenu.h
+//the function definition is at SubMenu.h
+void StudentSubMenu(Tutor*, Student*, Student*);
 
 void DisplayTutorsAndRate(Tutor* TutorHead, Student* StudentHead, Student* wantedstudent) {
 	int found, rating;

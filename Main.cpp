@@ -14,9 +14,10 @@
 using namespace std;
 
 //Function Prototype Declaration
+void MainLandingPage();
 bool AdminLogin(Admin*, string, string);
 struct Student* StudentLogin(Student*, string, string);
-void MainLandingPage();
+
 
 int main() {
 	//Call Main Landing Page Function
@@ -187,9 +188,9 @@ void MainLandingPage() {
 			name = trim(name);
 		}
 
-		cout << "Enter your phone number here: "; //**** ADD VALIDATE PHONE NUMBER
+		cout << "Enter your phone number here: "; 
 		getline(cin, phone);
-		while (!(checkIntInput(phone))) {
+		while (!(ValidPhoneNumber(phone))) {
 			cout << "Invalid phone number entered." << endl << "Please try again." << endl << endl << endl;
 			cout << "Enter your phone number here: ";
 			//Clear previous input

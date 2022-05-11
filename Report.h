@@ -7,6 +7,7 @@
 
 using namespace std;
 
+//Function Prototype Declaration
 void CountTutors(Tutor**);
 
 //Count tutors in each center for each subject and generate report

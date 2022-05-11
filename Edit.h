@@ -10,6 +10,7 @@
 
 using namespace std;
 
+//Function Prototype Declaration
 bool AddNewTutor(Tutor**);
 void DeleteTutor(Tutor**); 
 void ModifyTutor(Tutor*, Student*, Admin*);
@@ -21,56 +22,6 @@ void RemoveATutorForStudent(Tutor*, Student*, Admin*, Student*, string);
 bool NoRepeatTutorForOneStudent(Tutor*, Student*, string);
 bool AValidTutorForStudents(Tutor*, string);
 
-//Function for System to Automatically Delete Tutor Record if Termination Date >= 180 days
-void DeleteTutor(Tutor** TutorHead_ref) {
-	Tutor* TutorHead = *TutorHead_ref;
-	struct tm time = GetCurrentTime();
-	
-	//Get Current Date
-	int currentDay = time.tm_mday;
-	int currentMonth = time.tm_mon + 1;
-	int currentYear = 1900 + time.tm_year;
-	int day = 0, month = 0, year = 0, dayDifferences;
-	string yearString, monthString, dayString;
-
-	if (TutorHead == NULL)
-		return;
-	while (TutorHead != NULL) {
-		//clear previous string data
-		yearString.clear();
-		monthString.clear();
-		dayString.clear();
-		//Get Termination Date of current node
-		//Extract Year, Month, Day of Termination Date
-		string TermDate = trim(TutorHead->DateTerminate);
-		for(int i = 0; i < 4; i++) {
-			yearString = yearString + TermDate.at(i);		
-		}
-		for(int i = 5; i < 7; i++) {
-			monthString = monthString + TermDate.at(i);	
-		}
-		for (int i = 8; i < 10; i++) {
-			dayString = dayString + TermDate.at(i);	
-		}
-		year = stoi(trim(yearString));
-		month = stoi(trim(monthString));
-		day = stoi(trim(dayString));
-
-		//TermDate Invalid
-		if (TermDate != "1900-01-01") {
-			if (getDifferenceDate(day, month, year, currentDay, currentMonth, currentYear) >= 180) {
-				if (TutorHead->prev == NULL) {
-					*TutorHead_ref = TutorHead->next;
-					TutorHead->next->prev = NULL;
-				}
-				else {
-					TutorHead->prev->next = TutorHead->next;
-				}
-			}
-		}
-		TutorHead = TutorHead->next;
-	}
-}
 //Function to Add New Tutor Record
 bool AddNewTutor(Tutor** TutorHead_ref) {
 	int valid, day, month, year;
@@ -168,14 +119,14 @@ bool AddNewTutor(Tutor** TutorHead_ref) {
 
 			dateJoin = to_string(year) + '-' + monthString + '-' + dayString;
 		}
-		
+
 	} while (!validDate);
 
 	dateTerminate = "1900-01-01";
 
 	cout << "Enter Tutor Phone Number: ";
 	getline(cin, phone);
-	while (!(checkIntInput(phone))) {
+	while (!(ValidPhoneNumber(phone))) {
 		cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;;
 		cout << "Enter Tutor Phone Number: ";
 		//Clear previous input
@@ -264,10 +215,61 @@ bool AddNewTutor(Tutor** TutorHead_ref) {
 		getline(cin, hourlyRateString);
 	}
 	hourlyRate = stoi(hourlyRateString);
-	
+
 	InsertAtBeginningForReadTutorFile(TutorHead_ref, tutorID, name, dateJoin, dateTerminate, hourlyRate, phone, address, centerCode, centerName, subjectCode, subjectName, 0, 0, 0);
 	addSuccess = true;
 	return addSuccess;
+}
+
+//Function for System to Automatically Delete Tutor Record if Termination Date >= 180 days
+void DeleteTutor(Tutor** TutorHead_ref) {
+	Tutor* TutorHead = *TutorHead_ref;
+	struct tm time = GetCurrentTime();
+	
+	//Get Current Date
+	int currentDay = time.tm_mday;
+	int currentMonth = time.tm_mon + 1;
+	int currentYear = 1900 + time.tm_year;
+	int day = 0, month = 0, year = 0, dayDifferences;
+	string yearString, monthString, dayString;
+
+	if (TutorHead == NULL)
+		return;
+	while (TutorHead != NULL) {
+		//clear previous string data
+		yearString.clear();
+		monthString.clear();
+		dayString.clear();
+		//Get Termination Date of current node
+		//Extract Year, Month, Day of Termination Date
+		string TermDate = trim(TutorHead->DateTerminate);
+		for(int i = 0; i < 4; i++) {
+			yearString = yearString + TermDate.at(i);		
+		}
+		for(int i = 5; i < 7; i++) {
+			monthString = monthString + TermDate.at(i);	
+		}
+		for (int i = 8; i < 10; i++) {
+			dayString = dayString + TermDate.at(i);	
+		}
+		year = stoi(trim(yearString));
+		month = stoi(trim(monthString));
+		day = stoi(trim(dayString));
+
+		//TermDate Invalid
+		if (TermDate != "1900-01-01") {
+			if (getDifferenceDate(day, month, year, currentDay, currentMonth, currentYear) >= 180) {
+				if (TutorHead->prev == NULL) {
+					*TutorHead_ref = TutorHead->next;
+					TutorHead->next->prev = NULL;
+				}
+				else {
+					TutorHead->prev->next = TutorHead->next;
+				}
+			}
+		}
+		TutorHead = TutorHead->next;
+	}
 }
 
 //Function to Modify Tutor Records
@@ -303,7 +305,7 @@ void ModifyTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	else { //ID Found and display
 		if (TutorID[0] == 'T' || TutorID[0] == 't') {
 			do {
-				Tutor* target = BinarySearchAlgorithmForTutor(TutorHead, TutorID);
+				Tutor* target = found;
 				DisplayOneTutorForAdmin(target);
 				//Select choice to modify which specific information
 				ValidChoice = 0;
@@ -334,7 +336,7 @@ void ModifyTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 					ValidChoice = 1;
 					cout << "Enter new phone number: ";
 					getline(cin, modification);
-					while (!(checkIntInput(modification))) {
+					while (!(ValidPhoneNumber(modification))) {
 						cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;;
 						cout << "Enter new phone number: ";
 						//Clear previous input
@@ -439,7 +441,7 @@ void TerminateTutor(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead) {
 	}
 	else {
 		if (TutorID[0] == 'T' || TutorID[0] == 't') {
-			Tutor* target = BinarySearchAlgorithmForTutor(TutorHead, TutorID);
+			Tutor* target = found;
 			DisplayOneTutorForAdmin(target);
 
 			do {
@@ -599,7 +601,7 @@ void SearchStudentToModify(Tutor* TutorHead, Student* StudentHead, Admin* AdminH
 		//Student ID found and calls modify function
 		else {
 			if (StudentID[0] == 'S' || StudentID[0] == 's') {
-				Student* target = BinarySearchAlgorithmForStudent(StudentHead, StudentID);
+				Student* target = found;
 				repeat = 0;
 				DisplayOneStudent(target);
 				ModifyStudentPage(TutorHead, StudentHead, AdminHead, target, StudentID);
@@ -649,7 +651,7 @@ void ModifyStudentPage(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead,
 			cout << "Enter new phone number for Student " << id << ": ";
 			getline(cin, modification);
 			//Validate input
-			while (!(checkIntInput(modification))) {
+			while (!(ValidPhoneNumber(modification))) {
 				cout << "Invalid input entered." << endl << "Please try again." << endl << endl << endl;;
 				cout << "Enter new phone number for Student " << id << ": ";
 				//Clear previous input
@@ -799,34 +801,6 @@ void AddATutorForStudent(Tutor* TutorHead, Student* StudentHead, Admin* AdminHea
 	ModifyStudentPage(TutorHead, StudentHead, AdminHead, target, id);
 }
 
-bool AValidTutorForStudents(Tutor* TutorHead, string TutorID) {
-	bool ValidTutor = false;
-
-	while (TutorHead != NULL) {
-		if (TutorHead->TutorID == TutorID) {
-			ValidTutor = true;
-			return ValidTutor;
-		}
-
-		TutorHead = TutorHead->next;
-	}
-
-	return ValidTutor;
-}
-
-bool NoRepeatTutorForOneStudent(Tutor* TutorHead, Student* wantedstudent, string TutorID) {
-	bool NoRepeat = true;
-
-	for (int i = 0; i < wantedstudent->NoOfTutors; i++) {
-		if (wantedstudent->TutorID[i] == TutorID) {
-			NoRepeat = false;
-			return NoRepeat;
-		}
-	}
-
-	return NoRepeat;
-}
-
 //Allow Admin to remove tutor for student
 void RemoveATutorForStudent(Tutor* TutorHead, Student* StudentHead, Admin* AdminHead, Student* target, string id) {
 	int found;
@@ -835,7 +809,7 @@ void RemoveATutorForStudent(Tutor* TutorHead, Student* StudentHead, Admin* Admin
 	do {
 		found = 0;
 		cout << "Enter the tutor ID to remove for Student " << id << " or Enter 'Y' to return to previous page: ";
-		
+
 		getline(cin, TutorID);
 		TutorID = trim(TutorID);
 		while (TutorID.empty()) {
@@ -889,3 +863,32 @@ void RemoveATutorForStudent(Tutor* TutorHead, Student* StudentHead, Admin* Admin
 	} while (found == 0);
 
 }
+
+//Function to Check if new added Tutor is valid for student
+bool AValidTutorForStudents(Tutor* TutorHead, string TutorID) {
+	bool ValidTutor = false;
+
+	while (TutorHead != NULL) {
+		if (TutorHead->TutorID == TutorID) {
+			ValidTutor = true;
+			return ValidTutor;
+		}
+		TutorHead = TutorHead->next;
+	}
+	return ValidTutor;
+}
+
+//Function to check if new added tutor is not repeated, if repeated, returns false
+bool NoRepeatTutorForOneStudent(Tutor* TutorHead, Student* wantedstudent, string TutorID) {
+	bool NoRepeat = true;
+
+	for (int i = 0; i < wantedstudent->NoOfTutors; i++) {
+		if (wantedstudent->TutorID[i] == TutorID) {
+			NoRepeat = false;
+			return NoRepeat;
+		}
+	}
+
+	return NoRepeat;
+}
+

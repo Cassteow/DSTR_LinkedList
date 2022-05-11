@@ -8,9 +8,9 @@
 
 using namespace std;
 
+//Function Prototype Declaration
 struct Tutor* GetMiddleForTutor(Tutor**, Tutor**);
 struct Tutor* BinarySearchAlgorithmForTutor(Tutor*, string);
-
 void SearchTutorByTutorID(Tutor*);
 int LinearSearchAlgorithm(Tutor*, int);
 void SearchTutorByRating(Tutor*);

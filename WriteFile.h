@@ -5,6 +5,7 @@
 
 using namespace std;
 
+//Function Prototype Declaration
 bool WriteTutorFile(Tutor*);
 bool WriteStudentFile(Student*);
 void WriteFilesBeforeEnd(Tutor*, Student*);
